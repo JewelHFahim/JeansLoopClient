@@ -12,9 +12,9 @@ export function DiscountSection({ products }: DiscountSectionProps) {
   if (!products || products.length === 0) return null;
 
   return (
-    <section className="bg-amber-50 py-16 border-y-2 border-black my-12">
+    <section className="bg-amber-50 py-16 border-y border-black/15 my-12">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-black pb-6 mb-8 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-black/15 pb-6 mb-8 gap-4">
           <div>
             <div className="inline-block bg-amber-400 text-black text-[9px] font-black uppercase tracking-widest px-3 py-1 mb-2 border border-black">
               Limited Time Deals

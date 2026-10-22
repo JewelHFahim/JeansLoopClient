@@ -35,7 +35,7 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="border-b-2 border-black pb-6 mb-8">
+      <div className="border-b border-black/15 pb-6 mb-8">
         <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-black leading-none">
           Shopping Bag
         </h1>
@@ -137,7 +137,7 @@ export default function CartPage() {
         {/* Order Summary */}
         <div className="lg:col-span-1">
           <div className="border-2 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-6">
-            <h2 className="text-lg font-black uppercase italic tracking-tight border-b-2 border-black pb-3">
+            <h2 className="text-lg font-black uppercase italic tracking-tight border-b border-black/15 pb-3">
               Order Summary
             </h2>
 
@@ -152,7 +152,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            <div className="border-t-2 border-black pt-4 flex justify-between items-baseline">
+            <div className="border-t border-black/15 pt-4 flex justify-between items-baseline">
               <span className="text-sm font-black uppercase">Subtotal</span>
               <span className="text-xl font-black text-black">{formatPrice(subtotal)}</span>
             </div>

@@ -28,13 +28,13 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/product/${product.slug}`} className="group h-full block">
       <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-none hover:translate-x-1 hover:translate-y-1 border-2 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-        <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100 border-b-2 border-black">
+        <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100 border-b border-black/15">
           {product.images?.length > 0 ? (
             <Image
               src={primaryImage}
               alt={product.name}
               fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
@@ -60,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
 
-        <CardContent className="p-4 bg-white">
+        <CardContent className="p-3 sm:p-4 bg-white">
           <p className="mb-1 text-[9px] font-black text-neutral-400 uppercase tracking-widest">
             {product.category}
           </p>
@@ -68,7 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-sm font-black ${hasDiscount ? 'text-amber-600' : 'text-black'}`}>
               {formatPrice(displayPrice)}
             </span>

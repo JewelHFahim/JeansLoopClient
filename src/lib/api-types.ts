@@ -115,6 +115,16 @@ export interface Slider {
   isActive: boolean;
 }
 
+export interface FeaturedCategorySectionConfig {
+  enabled: boolean;
+  category: string;
+  title: string;
+  tagline: string;
+  badge: string;
+  bannerImage: string;
+  buttonText: string;
+}
+
 export interface SiteSettings {
   title: string;
   tagline: string;
@@ -132,6 +142,7 @@ export interface SiteSettings {
     whatsapp?: string;
     tiktok?: string;
   };
+  featuredCategorySection?: FeaturedCategorySectionConfig;
 }
 
 export interface UserProfile {

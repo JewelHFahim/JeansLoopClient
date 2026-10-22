@@ -48,9 +48,9 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
-  // Compute shipping fee based on selected district
+  // Compute shipping fee based on selected district (Dhaka: ৳70, All other districts: ৳140)
   const shippingFee =
-    formData.city === 'Dhaka' || formData.city === 'Gazipur' || formData.city === 'Narayanganj'
+    formData.city?.trim().toLowerCase() === 'dhaka'
       ? 70
       : formData.city
       ? 140
@@ -162,7 +162,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="border-b-2 border-black pb-6 mb-8">
+      <div className="border-b border-black/15 pb-6 mb-8">
         <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-black leading-none">
           Checkout Console
         </h1>

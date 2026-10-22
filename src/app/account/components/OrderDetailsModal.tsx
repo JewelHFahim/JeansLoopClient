@@ -17,7 +17,7 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
       <div className="relative w-full max-w-2xl bg-white border-4 border-black p-6 md:p-8 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex justify-between items-start border-b-2 border-black pb-4 mb-6">
+        <div className="flex justify-between items-start border-b border-black/15 pb-4 mb-6">
           <div>
             <span className="text-[10px] font-black uppercase text-neutral-400">Order Inspection</span>
             <h2 className="text-xl font-black uppercase italic tracking-tight text-black">
@@ -59,7 +59,7 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
         {/* Items List */}
         <div className="space-y-3 mb-6">
           <h3 className="text-xs font-black uppercase tracking-widest text-black">Purchased Items</h3>
-          <div className="border-2 border-black divide-y-2 divide-black">
+          <div className="border-2 border-black divide-y divide-black/15">
             {order.items.map((item, idx) => (
               <div key={idx} className="p-3 flex items-center gap-4 bg-white">
                 <div className="relative w-12 h-14 flex-shrink-0 bg-neutral-100 border border-neutral-200">
@@ -80,7 +80,7 @@ export function OrderDetailsModal({ order, onClose }: OrderDetailsModalProps) {
         </div>
 
         {/* Pricing Summary */}
-        <div className="border-t-2 border-black pt-4 space-y-1.5 text-xs font-bold uppercase">
+        <div className="border-t border-black/15 pt-4 space-y-1.5 text-xs font-bold uppercase">
           <div className="flex justify-between text-neutral-500">
             <span>Items Subtotal:</span>
             <span>{formatPrice(order.itemsPrice)}</span>

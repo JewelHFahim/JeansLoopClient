@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
         </nav>
 
         {/* Page Header */}
-        <div className="border-b-4 border-black pb-8 mb-12">
+        <div className="border-b border-black/15 pb-8 mb-12">
           <span className="inline-block bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3">
             Trust & Security
           </span>

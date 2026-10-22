@@ -8,7 +8,18 @@ import { Input } from '@/components/ui/input';
 import { ProductCard } from '@/components/product/ProductCard';
 import { productsApi, categoriesApi } from '@/lib/api';
 import { useDebounce } from '@/hooks/useDebounce';
-import { SlidersHorizontal, ArrowUpDown, X, Loader2 } from 'lucide-react';
+import {
+  SlidersHorizontal,
+  Loader2,
+  Columns2,
+  Columns3,
+  Columns4,
+  Square,
+  X,
+} from 'lucide-react';
+
+type GridOption = 2 | 3 | 4;
+const LIMIT_OPTIONS = [12, 24, 36] as const;
 
 export function ShopClient() {
   const router = useRouter();
@@ -23,6 +34,21 @@ export function ShopClient() {
   const page = Number(searchParams.get('page')) || 1;
   const initialKeyword = searchParams.get('keyword') || '';
 
+  const limitParam = Number(searchParams.get('limit'));
+  const gridParam = Number(searchParams.get('grid'));
+
+  // Items per page (default: 12, choices: 12, 24, 36)
+  const [limit, setLimit] = useState<number>(() => {
+    if (LIMIT_OPTIONS.includes(limitParam as (typeof LIMIT_OPTIONS)[number])) return limitParam;
+    return 12;
+  });
+
+  // Grid columns (default: 3, choices: 2 [Large], 3 [Standard], 4 [Compact])
+  const [gridCols, setGridCols] = useState<GridOption>(() => {
+    if (gridParam === 2 || gridParam === 3 || gridParam === 4) return gridParam as GridOption;
+    return 3;
+  });
+
   const [searchInput, setSearchInput] = useState(initialKeyword);
   const debouncedSearch = useDebounce(searchInput, 400);
 
@@ -34,6 +60,41 @@ export function ShopClient() {
       updateFilters({ keyword: debouncedSearch || undefined, page: 1 });
     }
   }, [debouncedSearch]);
+
+  // Sync URL changes to local state (for browser history back/forward)
+  useEffect(() => {
+    if (limitParam && LIMIT_OPTIONS.includes(limitParam as (typeof LIMIT_OPTIONS)[number]) && limitParam !== limit) {
+      setLimit(limitParam);
+    }
+  }, [limitParam]);
+
+  useEffect(() => {
+    if (gridParam && (gridParam === 2 || gridParam === 3 || gridParam === 4) && gridParam !== gridCols) {
+      setGridCols(gridParam as GridOption);
+    }
+  }, [gridParam]);
+
+  // Read saved grid & limit from localStorage on initial mount if not in URL
+  useEffect(() => {
+    if (!searchParams.get('grid')) {
+      const savedGrid = localStorage.getItem('jeansloop_shop_grid');
+      if (savedGrid) {
+        const parsed = Number(savedGrid);
+        if (parsed === 2 || parsed === 3 || parsed === 4) {
+          setGridCols(parsed as GridOption);
+        }
+      }
+    }
+    if (!searchParams.get('limit')) {
+      const savedLimit = localStorage.getItem('jeansloop_shop_limit');
+      if (savedLimit) {
+        const parsed = Number(savedLimit);
+        if (LIMIT_OPTIONS.includes(parsed as (typeof LIMIT_OPTIONS)[number])) {
+          setLimit(parsed);
+        }
+      }
+    }
+  }, []);
 
   const updateFilters = (updates: Record<string, string | number | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -47,12 +108,38 @@ export function ShopClient() {
     router.push(`/shop?${params.toString()}`);
   };
 
+  const handleGridChange = (cols: GridOption) => {
+    setGridCols(cols);
+    try {
+      localStorage.setItem('jeansloop_shop_grid', String(cols));
+    } catch {}
+    updateFilters({ grid: cols === 3 ? undefined : cols });
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    try {
+      localStorage.setItem('jeansloop_shop_limit', String(newLimit));
+    } catch {}
+    updateFilters({ limit: newLimit === 12 ? undefined : newLimit, page: 1 });
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    updateFilters({ page: newPage });
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const { data: productsData, isLoading } = useQuery({
-    queryKey: ['products', category, discount, sort, minPrice, maxPrice, size, page, debouncedSearch],
+    queryKey: ['products', category, discount, sort, minPrice, maxPrice, size, page, limit, debouncedSearch],
     queryFn: async () => {
       const res = await productsApi.getAll({
         page,
-        limit: 12,
+        limit,
         category: category || undefined,
         hasDiscount: discount === 'true' ? true : undefined,
         sort,
@@ -77,32 +164,56 @@ export function ShopClient() {
   const pagination = productsData?.pagination;
   const categories = categoriesRes || [];
 
+  const totalProducts = pagination?.total || 0;
+  const startItem = totalProducts > 0 ? (page - 1) * limit + 1 : 0;
+  const endItem = Math.min(page * limit, totalProducts);
+
+  // Responsive Grid CSS according to selected density
+  const getGridClass = () => {
+    switch (gridCols) {
+      case 2:
+        // Large Showcase View: 1 column on mobile, 2 columns on tablet/desktop
+        return 'grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6';
+      case 4:
+        // Compact Density View: 2 columns on mobile/tablet, 3 on md, 4 on lg/xl
+        return 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4';
+      case 3:
+      default:
+        // Standard Catalog View: 2 columns on mobile/tablet, 3 on md/lg
+        return 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-5';
+    }
+  };
+
+  const hasActiveFilters = Boolean(
+    category || discount || minPrice || maxPrice || size || debouncedSearch
+  );
+
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Top Header */}
-      <div className="border-b-2 border-black pb-6 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-black leading-none">
+    <div className="container mx-auto px-4 pt-4 md:pt-6 pb-12">
+      {/* Top Header - Compact Standard Layout */}
+      <div className="border-b border-black/15 pb-3 md:pb-4 mb-4 md:mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black uppercase italic tracking-tight text-black leading-none">
             {category ? category.toUpperCase() : 'All Collections'}
           </h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-neutral-400 mt-2">
-            {pagination ? `${pagination.total} Available Items` : 'Browsing Registry'}
-          </p>
+          <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+            {pagination ? `(${pagination.total})` : ''}
+          </span>
         </div>
 
-        {/* Search & Sort Controls */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Search, Sort & Mobile Filters Button */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Input
-            placeholder="SEARCH PRODUCTS..."
+            placeholder="SEARCH..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full sm:w-60 h-10 text-[10px]"
+            className="w-full sm:w-48 md:w-56 h-9 text-[10px]"
           />
 
           <select
             value={sort}
             onChange={(e) => updateFilters({ sort: e.target.value, page: 1 })}
-            className="h-10 border-2 border-black bg-white px-3 text-[10px] font-black uppercase tracking-wider outline-none"
+            className="h-9 border-2 border-black bg-white px-2.5 text-[10px] font-black uppercase tracking-wider outline-none cursor-pointer"
           >
             <option value="newest">Latest Releases</option>
             <option value="price-low">Price: Low to High</option>
@@ -114,96 +225,263 @@ export function ShopClient() {
             variant="outline"
             size="sm"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="md:hidden h-10"
+            className="md:hidden h-9 px-3 text-[10px]"
           >
-            <SlidersHorizontal className="h-4 w-4 mr-2" /> Filters
+            <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5" />
+            {isSidebarOpen ? 'Close' : 'Filters'}
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Filters Sidebar */}
+      {/* Main Body: Compact Sticky Sidebar + Maximized Products Section */}
+      <div className="flex flex-col md:flex-row gap-5 lg:gap-6 items-start">
+        {/* Optimized Left Sidebar - Slim & Compact */}
         <aside
           className={`${
             isSidebarOpen ? 'block' : 'hidden'
-          } md:block md:col-span-1 space-y-6 border-b-2 md:border-b-0 md:border-r-2 border-black pb-8 md:pb-0 md:pr-6`}
+          } md:block w-full md:w-48 lg:w-52 shrink-0 space-y-4 border-b md:border-b-0 md:border-r border-black/15 pb-5 md:pb-2 md:pr-4 md:sticky md:top-20 bg-white`}
         >
           {/* Active filters clear */}
-          {(category || discount || minPrice || maxPrice || size || debouncedSearch) && (
-            <div className="border-b-2 border-black pb-4">
+          {hasActiveFilters && (
+            <div className="border-b border-black/15 pb-3">
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={() => router.push('/shop')}
-                className="w-full text-[9px]"
+                className="w-full h-8 text-[9px] tracking-wider"
               >
-                Clear All Filters
+                <X className="w-3 h-3 mr-1" />
+                Clear Filters
               </Button>
             </div>
           )}
 
-          {/* Categories */}
+          {/* Categories Navigation */}
           <div>
-            <h3 className="text-xs font-black uppercase tracking-widest text-black mb-3">Categories</h3>
-            <div className="flex flex-col space-y-2">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-black mb-2 flex items-center justify-between">
+              <span>Categories</span>
+              <span className="text-[9px] text-neutral-400 font-bold">{categories.length}</span>
+            </h3>
+            <div className="flex flex-col space-y-1">
               <button
                 onClick={() => updateFilters({ category: undefined, page: 1 })}
-                className={`text-left text-xs font-bold uppercase tracking-wider py-1 ${
-                  !category ? 'font-black underline text-black' : 'text-neutral-500 hover:text-black'
+                className={`text-left text-[11px] font-bold uppercase tracking-wider py-1 px-2 transition-all ${
+                  !category
+                    ? 'bg-black text-white font-black'
+                    : 'text-neutral-600 hover:text-black hover:bg-neutral-100'
                 }`}
               >
-                All Categories
+                All Products
               </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat._id}
-                  onClick={() => updateFilters({ category: cat.slug, page: 1 })}
-                  className={`text-left text-xs font-bold uppercase tracking-wider py-1 ${
-                    category.toLowerCase() === cat.slug.toLowerCase()
-                      ? 'font-black underline text-black'
-                      : 'text-neutral-500 hover:text-black'
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const isActive = category.toLowerCase() === cat.slug.toLowerCase();
+                return (
+                  <button
+                    key={cat._id}
+                    onClick={() => updateFilters({ category: cat.slug, page: 1 })}
+                    className={`text-left text-[11px] font-bold uppercase tracking-wider py-1 px-2 transition-all ${
+                      isActive
+                        ? 'bg-black text-white font-black'
+                        : 'text-neutral-600 hover:text-black hover:bg-neutral-100'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Special Offers Filter */}
-          <div className="border-t-2 border-black pt-4">
-            <h3 className="text-xs font-black uppercase tracking-widest text-black mb-3">Promotions</h3>
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-bold uppercase">
+          {/* Promotions Filter */}
+          <div className="border-t border-black/15 pt-3">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-black mb-2">Promotions</h3>
+            <label className="flex items-center gap-2 cursor-pointer text-[11px] font-bold uppercase text-neutral-800 hover:text-black">
               <input
                 type="checkbox"
                 checked={discount === 'true'}
                 onChange={(e) => updateFilters({ discount: e.target.checked ? 'true' : undefined, page: 1 })}
-                className="w-4 h-4 rounded-none border-2 border-black"
+                className="w-3.5 h-3.5 rounded-none border-2 border-black accent-black"
               />
-              <span>Discounted Items Only</span>
+              <span>Sale / Discounted</span>
             </label>
           </div>
         </aside>
 
-        {/* Products Grid */}
-        <div className="md:col-span-3">
+        {/* Maximized Products Section */}
+        <div className="flex-1 min-w-0 w-full">
+          {/* Catalog View Controls Toolbar */}
+          <div className="bg-white border-2 border-black p-2.5 sm:p-3 mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+            {/* Left: Product Counter */}
+            <div className="flex items-center justify-between sm:justify-start gap-2">
+              <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-black">
+                {isLoading ? (
+                  <span className="text-neutral-400 animate-pulse flex items-center gap-1.5">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin inline" />
+                    Updating catalog...
+                  </span>
+                ) : pagination && pagination.total > 0 ? (
+                  <>
+                    Showing{' '}
+                    <span className="bg-neutral-100 px-1.5 py-0.5 border border-black font-black">
+                      {startItem}–{endItem}
+                    </span>{' '}
+                    of <span className="font-black">{pagination.total}</span> Items
+                  </>
+                ) : (
+                  <span>0 Products Found</span>
+                )}
+              </p>
+            </div>
+
+            {/* Right: Grid density & items per page switchers */}
+            <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-4 flex-wrap">
+              {/* Mobile View Toggle (1 Col vs 2 Cols) */}
+              <div className="flex md:hidden items-center gap-1">
+                <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">
+                  VIEW:
+                </span>
+                <div className="inline-flex border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <button
+                    type="button"
+                    onClick={() => handleGridChange(2)}
+                    title="1 Column (Large Showcase View)"
+                    aria-label="Single column view"
+                    className={`h-7 px-2 flex items-center gap-1 text-[10px] font-black transition-colors ${
+                      gridCols === 2
+                        ? 'bg-black text-white'
+                        : 'text-black hover:bg-neutral-100'
+                    }`}
+                  >
+                    <Square className="w-3 h-3" />
+                    <span>1</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleGridChange(3)}
+                    title="2 Columns (Grid View)"
+                    aria-label="Two column view"
+                    className={`h-7 px-2 flex items-center gap-1 text-[10px] font-black transition-colors border-l-2 border-black ${
+                      gridCols === 3 || gridCols === 4
+                        ? 'bg-black text-white'
+                        : 'text-black hover:bg-neutral-100'
+                    }`}
+                  >
+                    <Columns2 className="w-3 h-3" />
+                    <span>2</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Desktop Grid Switcher (2, 3, 4 Columns) */}
+              <div className="hidden md:flex items-center gap-1">
+                <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">
+                  GRID:
+                </span>
+                <div className="inline-flex border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <button
+                    type="button"
+                    onClick={() => handleGridChange(2)}
+                    title="2 Columns (Large Showcase)"
+                    aria-label="2 Columns Large"
+                    className={`h-7 px-2.5 flex items-center gap-1 text-[10px] font-black transition-colors ${
+                      gridCols === 2
+                        ? 'bg-black text-white'
+                        : 'text-black hover:bg-neutral-100'
+                    }`}
+                  >
+                    <Columns2 className="w-3 h-3" />
+                    <span className="hidden xl:inline">2</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleGridChange(3)}
+                    title="3 Columns (Standard Catalog)"
+                    aria-label="3 Columns Standard"
+                    className={`h-7 px-2.5 flex items-center gap-1 text-[10px] font-black transition-colors border-l-2 border-black ${
+                      gridCols === 3
+                        ? 'bg-black text-white'
+                        : 'text-black hover:bg-neutral-100'
+                    }`}
+                  >
+                    <Columns3 className="w-3 h-3" />
+                    <span className="hidden xl:inline">3</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleGridChange(4)}
+                    title="4 Columns (Compact Grid)"
+                    aria-label="4 Columns Compact"
+                    className={`h-7 px-2.5 flex items-center gap-1 text-[10px] font-black transition-colors border-l-2 border-black ${
+                      gridCols === 4
+                        ? 'bg-black text-white'
+                        : 'text-black hover:bg-neutral-100'
+                    }`}
+                  >
+                    <Columns4 className="w-3 h-3" />
+                    <span className="hidden xl:inline">4</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Products Per Page Switcher */}
+              <div className="flex items-center gap-1">
+                <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">
+                  SHOW:
+                </span>
+                <div className="inline-flex border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  {LIMIT_OPTIONS.map((num, idx) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => handleLimitChange(num)}
+                      title={`Show ${num} products per page`}
+                      aria-label={`Show ${num} products`}
+                      className={`h-7 px-2 sm:px-2.5 text-[10px] font-black transition-colors ${
+                        idx > 0 ? 'border-l-2 border-black' : ''
+                      } ${
+                        limit === num
+                          ? 'bg-black text-white'
+                          : 'text-black hover:bg-neutral-100'
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Products Grid Content */}
           {isLoading ? (
-            <div className="min-h-[40vh] flex items-center justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-black" />
+            <div className={`grid ${getGridClass()}`}>
+              {Array.from({ length: Math.min(limit, 6) }).map((_, i) => (
+                <div
+                  key={i}
+                  className="border-2 border-black bg-neutral-100 animate-pulse shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  <div className="aspect-[3/4] bg-neutral-200 border-b border-black/15" />
+                  <div className="p-3 space-y-2">
+                    <div className="h-2.5 w-16 bg-neutral-300" />
+                    <div className="h-3.5 w-3/4 bg-neutral-300" />
+                    <div className="h-3 w-1/3 bg-neutral-300" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="border-2 border-black p-12 text-center bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <h3 className="text-2xl font-black uppercase italic tracking-tight text-black mb-2">
+            <div className="border-2 border-black p-8 sm:p-12 text-center bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+              <h3 className="text-xl font-black uppercase italic tracking-tight text-black mb-1.5">
                 No Products Found
               </h3>
-              <p className="text-xs text-neutral-400 font-bold uppercase tracking-wider mb-6">
+              <p className="text-[11px] text-neutral-400 font-bold uppercase tracking-wider mb-5">
                 Try modifying your filter options or search term.
               </p>
-              <Button onClick={() => router.push('/shop')}>Reset Filters</Button>
+              <Button size="sm" onClick={() => router.push('/shop')}>Reset Filters</Button>
             </div>
           ) : (
-            <div className="space-y-10">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div className="space-y-8">
+              <div className={`grid ${getGridClass()}`}>
                 {products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
@@ -211,12 +489,12 @@ export function ShopClient() {
 
               {/* Pagination */}
               {pagination && pagination.pages > 1 && (
-                <div className="flex justify-center items-center gap-2 pt-8 border-t-2 border-black">
+                <div className="flex justify-center items-center gap-2 pt-6 border-t border-black/15">
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={pagination.page <= 1}
-                    onClick={() => updateFilters({ page: pagination.page - 1 })}
+                    onClick={() => handlePageChange(pagination.page - 1)}
                   >
                     Previous
                   </Button>
@@ -227,7 +505,7 @@ export function ShopClient() {
                     variant="outline"
                     size="sm"
                     disabled={pagination.page >= pagination.pages}
-                    onClick={() => updateFilters({ page: pagination.page + 1 })}
+                    onClick={() => handlePageChange(pagination.page + 1)}
                   >
                     Next
                   </Button>

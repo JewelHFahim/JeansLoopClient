@@ -67,7 +67,7 @@ export function OrderSummary({
 
   return (
     <div className="border-2 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-6">
-      <h2 className="text-lg font-black uppercase italic tracking-tight border-b-2 border-black pb-3">
+      <h2 className="text-lg font-black uppercase italic tracking-tight border-b border-black/15 pb-3">
         Order Summary ({items.length})
       </h2>
 
@@ -97,7 +97,7 @@ export function OrderSummary({
       </div>
 
       {/* Coupon Box */}
-      <div className="border-t-2 border-black pt-4">
+      <div className="border-t border-black/15 pt-4">
         {appliedCoupon ? (
           <div className="flex justify-between items-center bg-green-50 border border-green-600 p-2 text-xs">
             <div className="flex items-center gap-2 text-green-700 font-bold">
@@ -135,7 +135,7 @@ export function OrderSummary({
       </div>
 
       {/* Breakdown */}
-      <div className="border-t-2 border-black pt-4 space-y-2 text-xs font-bold uppercase">
+      <div className="border-t border-black/15 pt-4 space-y-2 text-xs font-bold uppercase">
         <div className="flex justify-between">
           <span className="text-neutral-500">Items Subtotal:</span>
           <span className="text-black">{formatPrice(subtotal)}</span>
@@ -159,13 +159,13 @@ export function OrderSummary({
       </div>
 
       {/* Grand Total */}
-      <div className="border-t-2 border-black pt-4 flex justify-between items-baseline">
+      <div className="border-t border-black/15 pt-4 flex justify-between items-baseline">
         <span className="text-sm font-black uppercase">Total Amount</span>
         <span className="text-2xl font-black text-black">{formatPrice(grandTotal)}</span>
       </div>
 
       {/* Terms checkbox */}
-      <div className="border-t-2 border-black pt-4 space-y-4">
+      <div className="border-t border-black/15 pt-4 space-y-4">
         <label className="flex items-start gap-2 cursor-pointer text-[10px] font-bold uppercase text-neutral-600">
           <input
             type="checkbox"

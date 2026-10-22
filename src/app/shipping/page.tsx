@@ -19,7 +19,7 @@ export default function ShippingPage() {
         </nav>
 
         {/* Page Header */}
-        <div className="border-b-4 border-black pb-8 mb-12">
+        <div className="border-b border-black/15 pb-8 mb-12">
           <span className="inline-block bg-black text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3">
             Logistics & Fulfillment
           </span>
@@ -101,19 +101,14 @@ export default function ShippingPage() {
                 </thead>
                 <tbody className="divide-y-2 divide-black">
                   <tr className="bg-neutral-50">
-                    <td className="p-3 font-bold border-r-2 border-black">Inside Dhaka City</td>
+                    <td className="p-3 font-bold border-r-2 border-black">Inside Dhaka</td>
                     <td className="p-3 border-r-2 border-black">24 – 48 Hours</td>
-                    <td className="p-3 font-black text-black">৳80</td>
+                    <td className="p-3 font-black text-black">৳70</td>
                   </tr>
                   <tr>
-                    <td className="p-3 font-bold border-r-2 border-black">Dhaka Suburbs (Gazipur, Savar, Keraniganj, Narayanganj)</td>
-                    <td className="p-3 border-r-2 border-black">48 – 72 Hours</td>
-                    <td className="p-3 font-black text-black">৳100 – ৳120</td>
-                  </tr>
-                  <tr className="bg-neutral-50">
                     <td className="p-3 font-bold border-r-2 border-black">Outside Dhaka (All Other Districts)</td>
                     <td className="p-3 border-r-2 border-black">2 – 4 Business Days</td>
-                    <td className="p-3 font-black text-black">৳130 – ৳150</td>
+                    <td className="p-3 font-black text-black">৳140</td>
                   </tr>
                 </tbody>
               </table>

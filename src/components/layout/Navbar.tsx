@@ -104,7 +104,7 @@ export function Navbar() {
   const brandTagline = settings?.tagline || 'Premium Denim';
 
   return (
-    <nav className="sticky top-0 z-50 border-b-2 border-black bg-white shadow-sm">
+    <nav className="sticky top-0 z-50 border-b border-black/15 bg-white shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Brand */}
         <Link href="/" className="flex flex-col items-start justify-center group gap-0.5">
@@ -184,7 +184,7 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {isMenuOpen && (
-        <div className="md:hidden border-t-2 border-black bg-white p-6 space-y-4">
+        <div className="md:hidden border-t border-black/15 bg-white p-6 space-y-4">
           <div className="flex flex-col space-y-3">
             <Link
               href="/shop?category=jeans"

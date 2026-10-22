@@ -38,7 +38,7 @@ export function ProfileForm() {
 
   return (
     <form onSubmit={handleSubmit} className="border-2 border-black p-6 bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-6">
-      <h2 className="text-lg font-black uppercase italic tracking-tight border-b-2 border-black pb-3">
+      <h2 className="text-lg font-black uppercase italic tracking-tight border-b border-black/15 pb-3">
         Profile Settings
       </h2>
 

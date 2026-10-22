@@ -18,6 +18,44 @@ async function getProduct(slug: string): Promise<Product | null> {
   }
 }
 
+async function getRelatedProducts(category: string | undefined, currentProductId: string): Promise<Product[]> {
+  try {
+    let items: Product[] = [];
+    if (category) {
+      const res = await fetch(
+        `${API_URL}/products?category=${encodeURIComponent(category)}&limit=10`,
+        { next: { revalidate: 60 } }
+      );
+      if (res.ok) {
+        const json = await res.json();
+        items = (json.data || []).filter(
+          (p: Product) => p._id !== currentProductId && p.slug !== currentProductId
+        );
+      }
+    }
+
+    if (items.length < 4) {
+      const fallbackRes = await fetch(`${API_URL}/products?limit=10`, {
+        next: { revalidate: 60 },
+      });
+      if (fallbackRes.ok) {
+        const fbJson = await fallbackRes.json();
+        const fallbackItems = (fbJson.data || []).filter(
+          (p: Product) =>
+            p._id !== currentProductId &&
+            p.slug !== currentProductId &&
+            !items.some((existing) => existing._id === p._id)
+        );
+        items = [...items, ...fallbackItems];
+      }
+    }
+
+    return items.slice(0, 4);
+  } catch {
+    return [];
+  }
+}
+
 // Generate dynamic metadata for Googlebot & OpenGraph
 export async function generateMetadata({
   params,
@@ -56,5 +94,7 @@ export default async function ProductDetailPage({
     notFound();
   }
 
-  return <ProductClient product={product} />;
+  const relatedProducts = await getRelatedProducts(product.category, product._id);
+
+  return <ProductClient product={product} relatedProducts={relatedProducts} />;
 }

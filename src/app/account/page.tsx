@@ -39,7 +39,7 @@ export default function AccountPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Top Banner */}
-      <div className="border-b-2 border-black pb-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+      <div className="border-b border-black/15 pb-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
           <span className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-400 block mb-1">
             Personal Registry
@@ -64,7 +64,7 @@ export default function AccountPage() {
       </div>
 
       {/* Tabs navigation */}
-      <div className="flex border-b-2 border-black gap-2 mb-8 overflow-x-auto">
+      <div className="flex border-b border-black/15 gap-2 mb-8 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

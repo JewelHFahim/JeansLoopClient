@@ -63,7 +63,7 @@ export default function RegisterPage() {
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center">
       <div className="w-full max-w-md border-2 border-black p-8 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] space-y-8">
-        <div className="border-b-2 border-black pb-4 text-center">
+        <div className="border-b border-black/15 pb-4 text-center">
           <span className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-400 block mb-1">
             New Registration
           </span>
@@ -146,7 +146,7 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <div className="border-t-2 border-black pt-4 text-center text-xs font-bold uppercase">
+        <div className="border-t border-black/15 pt-4 text-center text-xs font-bold uppercase">
           <p className="text-neutral-500">
             Already registered?{' '}
             <Link href="/login" className="text-black underline font-black">

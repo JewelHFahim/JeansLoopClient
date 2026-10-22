@@ -12,7 +12,7 @@ async function getHomeData() {
       fetch(`${API_URL}/categories`, { next: { revalidate: 60 } }),
       fetch(`${API_URL}/sliders/active`, { next: { revalidate: 60 } }),
       fetch(`${API_URL}/products?hasDiscount=true&limit=8`, { next: { revalidate: 60 } }),
-      fetch(`${API_URL}/products?limit=32`, { next: { revalidate: 60 } }),
+      fetch(`${API_URL}/products?limit=50`, { next: { revalidate: 60 } }),
     ]);
 
     const categories = categoriesRes.ok ? (await categoriesRes.json()).data : [];
@@ -51,8 +51,8 @@ export default async function HomePage() {
       {/* 3. Discount Offers Section */}
       {discountProducts.length > 0 && <DiscountSection products={discountProducts} />}
 
-      {/* 4. Categorized Product Collections */}
-      <div className="space-y-0">
+      {/* 4. Categorized Collections (All categories rendered in the 33% / 67% showcase layout) */}
+      <div className="space-y-6">
         {categories.map((category, index) => {
           const categoryProducts = allProducts.filter(
             (p) =>
@@ -60,13 +60,12 @@ export default async function HomePage() {
               p.category.toLowerCase() === category.slug.toLowerCase()
           );
 
-          if (categoryProducts.length === 0) return null;
-
           return (
             <CategorySection
               key={category._id}
               category={category}
               products={categoryProducts}
+              fallbackProducts={allProducts}
               index={index}
             />
           );

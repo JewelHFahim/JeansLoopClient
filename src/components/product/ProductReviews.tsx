@@ -42,6 +42,8 @@ interface ProductReviewsProps {
   productId: string;
   productSlug: string;
   productName: string;
+  className?: string;
+  onClose?: () => void;
 }
 
 // Curated realistic default reviews to ensure pristine presentation on initial render
@@ -93,7 +95,13 @@ const DEFAULT_SAMPLE_REVIEWS: Review[] = [
   },
 ];
 
-export function ProductReviews({ productId, productSlug, productName }: ProductReviewsProps) {
+export function ProductReviews({
+  productId,
+  productSlug,
+  productName,
+  className,
+  onClose,
+}: ProductReviewsProps) {
   const [reviews, setReviews] = useState<Review[]>(DEFAULT_SAMPLE_REVIEWS);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -309,9 +317,9 @@ export function ProductReviews({ productId, productSlug, productName }: ProductR
   };
 
   return (
-    <section id="reviews-section" className="border-t-2 border-black pt-16 mt-16 space-y-10">
+    <section id="reviews-content" className={className || "border-t border-black/15 pt-16 mt-16 space-y-10"}>
       {/* 1. Header with Brutalist Title */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-2 border-black pb-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-black/15 pb-6">
         <div>
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 block mb-1">
             Verified Experiences
@@ -336,7 +344,7 @@ export function ProductReviews({ productId, productSlug, productName }: ProductR
       {/* 2. Rating Analytics Dashboard (Minimalist, Clean & Modern) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 md:p-8 border-2 border-black bg-neutral-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
         {/* Left Column: Overall Rating Score */}
-        <div className="lg:col-span-4 flex flex-col justify-center items-center lg:items-start text-center lg:text-left border-b-2 lg:border-b-0 lg:border-r-2 border-black pb-6 lg:pb-0 lg:pr-8">
+        <div className="lg:col-span-4 flex flex-col justify-center items-center lg:items-start text-center lg:text-left border-b lg:border-b-0 lg:border-r border-black/15 pb-6 lg:pb-0 lg:pr-8">
           <div className="flex items-baseline gap-2">
             <span className="text-6xl font-black tracking-tighter text-black leading-none">
               {stats.average.toFixed(1)}
@@ -369,7 +377,7 @@ export function ProductReviews({ productId, productSlug, productName }: ProductR
         </div>
 
         {/* Middle Column: Star Breakdown Bars */}
-        <div className="lg:col-span-5 flex flex-col justify-center space-y-2 border-b-2 lg:border-b-0 lg:border-r-2 border-black pb-6 lg:pb-0 lg:pr-8">
+        <div className="lg:col-span-5 flex flex-col justify-center space-y-2 border-b lg:border-b-0 lg:border-r border-black/15 pb-6 lg:pb-0 lg:pr-8">
           {[5, 4, 3, 2, 1].map((rating) => {
             const count = stats.breakdown[rating] || 0;
             const percentage = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0;
@@ -471,7 +479,7 @@ export function ProductReviews({ productId, productSlug, productName }: ProductR
           onSubmit={handleSubmitReview}
           className="border-2 border-black p-6 md:p-8 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-6 animate-in fade-in-50 duration-200"
         >
-          <div className="flex items-center justify-between border-b-2 border-black pb-3">
+          <div className="flex items-center justify-between border-b border-black/15 pb-3">
             <div>
               <h3 className="text-sm font-black uppercase tracking-widest text-black">
                 Write A Customer Review
@@ -637,7 +645,7 @@ export function ProductReviews({ productId, productSlug, productName }: ProductR
       )}
 
       {/* 4. Filter Tabs and Sorting Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-2 border-black pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-black/15 pb-4">
         {/* Star Filter Pills */}
         <div className="flex flex-wrap items-center gap-1.5">
           <button
