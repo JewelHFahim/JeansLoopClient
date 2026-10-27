@@ -60,7 +60,7 @@ export function PaymentSelector({
           <Smartphone className="h-6 w-6 mb-2" />
           <div>
             <p className="text-xs font-black uppercase">bKash Payment</p>
-            <p className="text-[10px] opacity-75 mt-0.5">Send Money / Merchant</p>
+            <p className="text-[10px] opacity-75 mt-0.5">Send Money</p>
           </div>
         </button>
 
@@ -87,7 +87,7 @@ export function PaymentSelector({
         <div className="border-2 border-black p-4 bg-amber-50 space-y-4 animate-in fade-in">
           <div className="space-y-1">
             <p className="text-xs font-black uppercase text-black">
-              bKash Merchant / Personal Number:
+              bKash Personal Number:
             </p>
             <p className="text-lg font-black text-pink-600 tracking-wider select-all">
               {BKASH_NUMBER}

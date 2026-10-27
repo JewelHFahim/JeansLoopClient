@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { ProductCard } from '@/components/product/ProductCard';
 import { productsApi, categoriesApi } from '@/lib/api';
 import { useDebounce } from '@/hooks/useDebounce';
+import { trackSearch } from '@/lib/fpixel';
 import {
   SlidersHorizontal,
   Loader2,
@@ -54,10 +55,13 @@ export function ShopClient() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Sync debounced search to URL query parameter
+  // Sync debounced search to URL query parameter and trigger Meta Pixel Search event
   useEffect(() => {
     if (debouncedSearch !== initialKeyword) {
       updateFilters({ keyword: debouncedSearch || undefined, page: 1 });
+      if (debouncedSearch && debouncedSearch.trim().length > 1) {
+        trackSearch(debouncedSearch.trim());
+      }
     }
   }, [debouncedSearch]);
 

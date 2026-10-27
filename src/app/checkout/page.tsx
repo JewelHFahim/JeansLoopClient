@@ -9,6 +9,7 @@ import { ShippingForm } from './components/ShippingForm';
 import { PaymentSelector } from './components/PaymentSelector';
 import { OrderSummary } from './components/OrderSummary';
 import { toast } from 'sonner';
+import { trackInitiateCheckout, trackPurchase } from '@/lib/fpixel';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -47,6 +48,18 @@ export default function CheckoutPage() {
       }));
     }
   }, [user]);
+
+  // Track Meta Pixel InitiateCheckout on mount
+  useEffect(() => {
+    if (items.length > 0) {
+      trackInitiateCheckout({
+        value: getTotalPrice(),
+        num_items: items.reduce((sum, item) => sum + item.quantity, 0),
+        content_ids: items.map((item) => item.productId),
+        currency: 'BDT',
+      });
+    }
+  }, []);
 
   // Compute shipping fee based on selected district (Dhaka: ৳70, All other districts: ৳140)
   const shippingFee =
@@ -140,6 +153,15 @@ export default function CheckoutPage() {
       // 3. Dispatch to backend API
       const res = await ordersApi.create(orderPayload);
       const createdOrder = res.data.data.order;
+
+      // Track Meta Pixel Purchase event
+      trackPurchase({
+        order_id: createdOrder._id,
+        value: createdOrder.totalAmount || (getTotalPrice() + shippingFee),
+        num_items: items.reduce((sum, item) => sum + item.quantity, 0),
+        content_ids: items.map((item) => item.productId),
+        currency: 'BDT',
+      });
 
       clearCart();
       toast.success('Order placed successfully!');

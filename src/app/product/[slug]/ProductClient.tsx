@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
 import { toast } from 'sonner';
+import { trackViewContent, trackAddToCart } from '@/lib/fpixel';
 import { ProductReviews } from '@/components/product/ProductReviews';
 import { ProductCard } from '@/components/product/ProductCard';
 import type { Product, ProductVariant } from '@/lib/api-types';
@@ -117,6 +118,19 @@ export function ProductClient({ product, relatedProducts = [] }: ProductClientPr
   );
   const displayPrice = hasDiscount ? product.discountedPrice! : selectedVariant?.price || product.price;
 
+  // Track Meta Pixel ViewContent event
+  useEffect(() => {
+    if (product?._id) {
+      trackViewContent({
+        id: product._id,
+        name: product.name,
+        category: product.category,
+        price: displayPrice,
+        currency: 'BDT',
+      });
+    }
+  }, [product?._id, displayPrice]);
+
   const handleAddToCart = () => {
     if (!selectedVariant && product.variants?.length > 0) {
       toast.error('Please select a size first');
@@ -140,6 +154,15 @@ export function ProductClient({ product, relatedProducts = [] }: ProductClientPr
       image: selectedImage || product.images?.[0],
       size: itemSize,
       color: itemColor,
+    });
+
+    // Track Meta Pixel AddToCart event
+    trackAddToCart({
+      id: product._id,
+      name: product.name,
+      price: displayPrice,
+      quantity,
+      currency: 'BDT',
     });
 
     toast.success(

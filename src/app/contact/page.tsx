@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { trackContact } from '@/lib/fpixel';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ export default function ContactPage() {
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
+      trackContact('contact_form');
       toast.success('Your message has been received! Our support team will get back to you shortly.');
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     }, 800);

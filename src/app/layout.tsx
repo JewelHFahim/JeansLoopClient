@@ -3,6 +3,7 @@ import './globals.css';
 import { Providers } from '@/components/providers';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { FacebookPixel } from '@/components/analytics/FacebookPixel';
 
 export const metadata: Metadata = {
   title: {
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col bg-white" suppressHydrationWarning>
+        <FacebookPixel />
         <Providers>
           <Navbar />
           <main className="flex-1">{children}</main>
