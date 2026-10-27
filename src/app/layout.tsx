@@ -5,7 +5,10 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { FacebookPixel } from '@/components/analytics/FacebookPixel';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jeansloop.com';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'JeansLoop | Premium Denim & Modern Menswear',
     template: '%s | JeansLoop',
@@ -16,7 +19,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
+    url: siteUrl,
     siteName: 'JeansLoop',
+    title: 'JeansLoop | Premium Denim & Modern Menswear',
+    description: 'Shop high-quality denim jeans, twill pants, and tailored trousers at JeansLoop.',
+  },
+  twitter: {
+    card: 'summary_large_image',
     title: 'JeansLoop | Premium Denim & Modern Menswear',
     description: 'Shop high-quality denim jeans, twill pants, and tailored trousers at JeansLoop.',
   },

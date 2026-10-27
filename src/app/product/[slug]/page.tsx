@@ -71,13 +71,33 @@ export async function generateMetadata({
     };
   }
 
+  const primaryImage = product.images?.[0] || '';
+  const pageUrl = `/product/${product.slug}`;
+
   return {
     title: product.name,
     description: product.description.slice(0, 160),
     openGraph: {
+      type: 'website',
+      url: pageUrl,
       title: `${product.name} | JeansLoop`,
       description: product.description.slice(0, 160),
-      images: product.images?.length > 0 ? [{ url: product.images[0] }] : [],
+      images: primaryImage
+        ? [
+            {
+              url: primaryImage,
+              width: 1200,
+              height: 630,
+              alt: product.name,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} | JeansLoop`,
+      description: product.description.slice(0, 160),
+      images: primaryImage ? [primaryImage] : [],
     },
   };
 }
