@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 /**
  * Thin top-of-page progress bar that fires on every route change.
  * Pure CSS — no library dependency.
  */
-export function PageProgress() {
+function PageProgressInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const barRef = useRef<HTMLDivElement>(null);
@@ -61,5 +61,13 @@ export function PageProgress() {
       ref={barRef}
       style={{ width: '0%', opacity: '0' }}
     />
+  );
+}
+
+export function PageProgress() {
+  return (
+    <Suspense fallback={null}>
+      <PageProgressInner />
+    </Suspense>
   );
 }
