@@ -277,7 +277,14 @@ export function ProductClient({ product, relatedProducts = [] }: ProductClientPr
                     selectedImage === img ? 'border-black ring-2 ring-black' : 'border-neutral-300 opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <Image src={img} alt={`Thumbnail ${i}`} fill className="object-cover" />
+                  <Image
+                    src={img}
+                    alt={`Thumbnail ${i}`}
+                    fill
+                    sizes="(max-width: 640px) 56px, 64px"
+                    loading="lazy"
+                    className="object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -713,7 +720,14 @@ export function ProductClient({ product, relatedProducts = [] }: ProductClientPr
                       : 'border-white/30 opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <Image src={img} alt={`Thumbnail ${i}`} fill className="object-cover" />
+                  <Image
+                    src={img}
+                    alt={`Thumbnail ${i}`}
+                    fill
+                    sizes="(max-width: 640px) 56px, 64px"
+                    loading="lazy"
+                    className="object-cover"
+                  />
                 </button>
               ))}
             </div>
