@@ -6,12 +6,13 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ProductCard } from '@/components/product/ProductCard';
+import { ProductCardSkeleton } from '@/components/ui/skeleton';
+import { Loader } from '@/components/ui/loader';
 import { productsApi, categoriesApi } from '@/lib/api';
 import { useDebounce } from '@/hooks/useDebounce';
 import { trackSearch } from '@/lib/fpixel';
 import {
   SlidersHorizontal,
-  Loader2,
   Columns2,
   Columns3,
   Columns4,
@@ -319,9 +320,9 @@ export function ShopClient() {
             <div className="flex items-center justify-between sm:justify-start gap-2">
               <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-black">
                 {isLoading ? (
-                  <span className="text-neutral-400 animate-pulse flex items-center gap-1.5">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin inline" />
-                    Updating catalog...
+                  <span className="text-neutral-400 flex items-center gap-1.5">
+                    <Loader variant="dots" className="text-neutral-400" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Updating…</span>
                   </span>
                 ) : pagination && pagination.total > 0 ? (
                   <>
@@ -458,19 +459,9 @@ export function ShopClient() {
 
           {/* Products Grid Content */}
           {isLoading ? (
-            <div className={`grid ${getGridClass()}`}>
+            <div className={`grid ${getGridClass()} gap-4`}>
               {Array.from({ length: Math.min(limit, 6) }).map((_, i) => (
-                <div
-                  key={i}
-                  className="border-2 border-black bg-neutral-100 animate-pulse shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                >
-                  <div className="aspect-[3/4] bg-neutral-200 border-b border-black/15" />
-                  <div className="p-3 space-y-2">
-                    <div className="h-2.5 w-16 bg-neutral-300" />
-                    <div className="h-3.5 w-3/4 bg-neutral-300" />
-                    <div className="h-3 w-1/3 bg-neutral-300" />
-                  </div>
-                </div>
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : products.length === 0 ? (

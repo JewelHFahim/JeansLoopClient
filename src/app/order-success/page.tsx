@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { CheckCircle2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Suspense } from 'react';
+import { useSettings } from '@/hooks/useSettings';
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('id') || 'Unknown';
+  const { siteName } = useSettings();
 
   return (
     <div className="container mx-auto px-4 py-20">
@@ -25,7 +27,7 @@ function OrderSuccessContent() {
             Order Received!
           </h1>
           <p className="text-xs text-neutral-600 font-medium leading-relaxed">
-            Thank you for shopping with JeansLoop. Our dispatch team is preparing your package for shipment.
+            Thank you for shopping with {siteName}. Our dispatch team is preparing your package for shipment.
           </p>
         </div>
 

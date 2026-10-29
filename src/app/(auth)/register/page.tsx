@@ -3,17 +3,20 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Loader } from '@/components/ui/loader';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
+import { useSettings } from '@/hooks/useSettings';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
+  const { siteName } = useSettings();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -68,7 +71,7 @@ export default function RegisterPage() {
             New Registration
           </span>
           <h1 className="text-3xl font-black uppercase italic tracking-tight text-black leading-none">
-            Join JeansLoop
+            Join {siteName}
           </h1>
         </div>
 
@@ -142,7 +145,7 @@ export default function RegisterPage() {
           </div>
 
           <Button type="submit" size="lg" disabled={loading} className="w-full gap-2 mt-4">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Account'}
+            {loading ? <Loader variant="inline" /> : 'Create Account'}
           </Button>
         </form>
 

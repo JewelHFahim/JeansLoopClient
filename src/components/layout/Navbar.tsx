@@ -7,8 +7,7 @@ import { ShoppingCart, User, Menu, LogOut, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart';
 import { useAuthStore } from '@/store/auth';
-import { useQuery } from '@tanstack/react-query';
-import { settingsApi } from '@/lib/api';
+import { useSettings } from '@/hooks/useSettings';
 
 function DesktopNavLinks() {
   const pathname = usePathname();
@@ -27,9 +26,9 @@ function DesktopNavLinks() {
       isActive: pathname === '/shop' && category?.toLowerCase() === 'twill',
     },
     {
-      href: '/shop?category=trouser',
-      label: 'Trouser',
-      isActive: pathname === '/shop' && category?.toLowerCase() === 'trouser',
+      href: '/shop?category=formal',
+      label: 'Formal',
+      isActive: pathname === '/shop' && (category?.toLowerCase() === 'formal' || category?.toLowerCase() === 'trouser'),
     },
     {
       href: '/shop',
@@ -61,7 +60,7 @@ function DesktopNavLinksFallback() {
   const links = [
     { href: '/shop?category=jeans', label: 'Jeans' },
     { href: '/shop?category=twill', label: 'Twill' },
-    { href: '/shop?category=trouser', label: 'Trouser' },
+    { href: '/shop?category=formal', label: 'Formal' },
     { href: '/shop', label: 'Shop All' },
   ];
 
@@ -86,31 +85,20 @@ export function Navbar() {
 
   const totalItems = useCartStore((state) => state.getTotalItems());
   const { isAuthenticated, logout } = useAuthStore();
+  const { siteName: brandTitle, tagline: brandTagline, logo } = useSettings();
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const { data: settingsRes } = useQuery({
-    queryKey: ['site-settings'],
-    queryFn: async () => {
-      const res = await settingsApi.get();
-      return res.data.data;
-    },
-  });
-
-  const settings = settingsRes;
-  const brandTitle = settings?.title || 'JeansLoop';
-  const brandTagline = settings?.tagline || 'Premium Denim';
 
   return (
     <nav className="sticky top-0 z-50 border-b border-black/15 bg-white shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Brand */}
         <Link href="/" className="flex flex-col items-start justify-center group gap-0.5">
-          {settings?.logo ? (
+          {logo ? (
             <div className="h-8 w-auto">
-              <img src={settings.logo} alt={brandTitle} className="h-full w-auto object-contain" />
+              <img src={logo} alt={brandTitle} className="h-full w-auto object-contain" />
             </div>
           ) : (
             <>
@@ -201,11 +189,11 @@ export function Navbar() {
               Twill
             </Link>
             <Link
-              href="/shop?category=trouser"
+              href="/shop?category=formal"
               onClick={() => setIsMenuOpen(false)}
               className="text-sm font-black uppercase tracking-wider text-black py-2 border-b border-neutral-100"
             >
-              Trouser
+              Formal
             </Link>
             <Link
               href="/shop"

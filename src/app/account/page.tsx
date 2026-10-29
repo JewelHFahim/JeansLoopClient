@@ -44,7 +44,7 @@ export default function AccountPage() {
           <span className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-400 block mb-1">
             Personal Registry
           </span>
-          <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-black leading-none">
+          <h1 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-black leading-none">
             {user?.name || 'My Account'}
           </h1>
           <p className="text-[10px] font-mono text-neutral-500 mt-2">{user?.email}</p>

@@ -1,14 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import type { Category, Product } from '@/lib/api-types';
+import { useSettings } from '@/hooks/useSettings';
 
 interface CategorySectionProps {
   category: Category;
   products: Product[];
   fallbackProducts?: Product[];
   index: number;
+  siteName?: string;
 }
 
 // Category-specific high-resolution fashion banner presets
@@ -19,6 +23,7 @@ const CATEGORY_DEFAULT_IMAGES: Record<string, string> = {
   sneakers: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&q=80&w=1200',
   't-shirt': 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=1200',
   trouser: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&q=80&w=1200',
+  formal: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&q=80&w=1200',
   twill: 'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&q=80&w=1200',
 };
 
@@ -27,6 +32,7 @@ const CATEGORY_TAGLINES: Record<string, string> = {
   shoes: 'Streetwear Footwear • Built for All-Day Motion',
   't-shirt': 'Heavyweight Cotton • Streetwear Essentials',
   trouser: 'Tailored Cuts • Modern Minimalist Silhouettes',
+  formal: 'Tailored Cuts • Modern Minimalist Silhouettes',
   twill: 'Premium Chino & Twill • Clean Contemporary Fit',
 };
 
@@ -35,7 +41,10 @@ export function CategorySection({
   products,
   fallbackProducts = [],
   index,
+  siteName: propSiteName,
 }: CategorySectionProps) {
+  const { siteName: hookSiteName } = useSettings();
+  const siteName = propSiteName || hookSiteName;
   const slugKey = category.slug.toLowerCase().trim();
   const bannerImage =
     category.image ||
@@ -107,7 +116,7 @@ export function CategorySection({
                 {category.name.toUpperCase()} COLLECTION
               </div>
               <p className="text-[9px] font-mono font-bold tracking-[0.25em] text-neutral-300 uppercase">
-                JEANSLOOP // ARCHIVE {String(index + 1).padStart(2, '0')}
+                {siteName.toUpperCase()} // ARCHIVE {String(index + 1).padStart(2, '0')}
               </p>
             </div>
 

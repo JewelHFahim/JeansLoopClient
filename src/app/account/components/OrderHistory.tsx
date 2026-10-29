@@ -5,7 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import { ordersApi } from '@/lib/api';
 import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Eye, Package, Loader2 } from 'lucide-react';
+import { OrderRowSkeleton } from '@/components/ui/skeleton';
+import { Eye, Package } from 'lucide-react';
 import { OrderDetailsModal } from './OrderDetailsModal';
 import type { Order } from '@/lib/api-types';
 
@@ -21,11 +22,7 @@ export function OrderHistory() {
   });
 
   if (isLoading) {
-    return (
-      <div className="py-12 flex justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-black" />
-      </div>
-    );
+    return <OrderRowSkeleton rows={4} />;
   }
 
   if (!orders || orders.length === 0) {

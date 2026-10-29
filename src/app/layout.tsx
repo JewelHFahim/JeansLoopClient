@@ -1,42 +1,53 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from '@/components/providers';
+import { AnnouncementBar } from '@/components/layout/AnnouncementBar';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { FacebookPixel } from '@/components/analytics/FacebookPixel';
+import { PageProgress } from '@/components/layout/PageProgress';
+import { getSiteSettings } from '@/lib/settings';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jeansloop.com';
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: 'JeansLoop | Premium Denim & Modern Menswear',
-    template: '%s | JeansLoop',
-  },
-  description:
-    'Shop high-quality denim jeans, twill pants, and tailored trousers at JeansLoop. Precision craftsmanship and exceptional comfort.',
-  keywords: ['denim jeans', 'mens clothing', 'premium jeans bangladesh', 'twill trousers'],
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: siteUrl,
-    siteName: 'JeansLoop',
-    title: 'JeansLoop | Premium Denim & Modern Menswear',
-    description: 'Shop high-quality denim jeans, twill pants, and tailored trousers at JeansLoop.',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'JeansLoop | Premium Denim & Modern Menswear',
-    description: 'Shop high-quality denim jeans, twill pants, and tailored trousers at JeansLoop.',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const title = settings.title || 'Store';
+  const tagline = settings.tagline || 'Modern Fashion & Apparel';
+  const description = `Shop high-quality collections at ${title}. Precision craftsmanship and exceptional comfort.`;
 
-export default function RootLayout({
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${title} | ${tagline}`,
+      template: `%s | ${title}`,
+    },
+    description,
+    keywords: ['clothing', 'mens clothing', 'fashion', 'apparel', title.toLowerCase()],
+    openGraph: {
+      type: 'website',
+      locale: 'en_US',
+      url: siteUrl,
+      siteName: title,
+      title: `${title} | ${tagline}`,
+      description,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | ${tagline}`,
+      description,
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getSiteSettings();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -73,6 +84,12 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-white" suppressHydrationWarning>
         <FacebookPixel />
         <Providers>
+          <PageProgress />
+          <AnnouncementBar
+            initialAnnouncement={settings.announcement}
+            initialEnabled={settings.announcementEnabled !== false}
+            initialLink={settings.announcementLink || ''}
+          />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

@@ -3,6 +3,7 @@ import { CategoryBar } from '@/components/home/CategoryBar';
 import { DiscountSection } from '@/components/home/DiscountSection';
 import { CategorySection } from '@/components/home/CategorySection';
 import type { Category, Product, Slider } from '@/lib/api-types';
+import { getSiteSettings } from '@/lib/settings';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
@@ -38,7 +39,12 @@ async function getHomeData() {
 }
 
 export default async function HomePage() {
-  const { categories, sliders, discountProducts, allProducts } = await getHomeData();
+  const [homeData, settings] = await Promise.all([
+    getHomeData(),
+    getSiteSettings(),
+  ]);
+  const { categories, sliders, discountProducts, allProducts } = homeData;
+  const siteName = settings.title || 'JeansLoop';
 
   return (
     <div className="pb-16 bg-white">
@@ -67,6 +73,7 @@ export default async function HomePage() {
               products={categoryProducts}
               fallbackProducts={allProducts}
               index={index}
+              siteName={siteName}
             />
           );
         })}

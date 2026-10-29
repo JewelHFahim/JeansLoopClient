@@ -3,6 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Banknote, CreditCard, Smartphone } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
 
 interface PaymentSelectorProps {
   paymentMethod: 'cod' | 'bkash' | 'card';
@@ -13,8 +14,6 @@ interface PaymentSelectorProps {
   setBkashTransactionId: (val: string) => void;
 }
 
-const BKASH_NUMBER = process.env.NEXT_PUBLIC_BKASH_NUMBER || '01911209322';
-
 export function PaymentSelector({
   paymentMethod,
   setPaymentMethod,
@@ -23,6 +22,8 @@ export function PaymentSelector({
   bkashTransactionId,
   setBkashTransactionId,
 }: PaymentSelectorProps) {
+  const { phone } = useSettings();
+  const bkashNumber = process.env.NEXT_PUBLIC_BKASH_NUMBER || phone || '01911209322';
   return (
     <div className="border-2 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-6">
       <h2 className="text-lg font-black uppercase italic tracking-tight border-b border-black/15 pb-3">
@@ -90,7 +91,7 @@ export function PaymentSelector({
               bKash Personal Number:
             </p>
             <p className="text-lg font-black text-pink-600 tracking-wider select-all">
-              {BKASH_NUMBER}
+              {bkashNumber}
             </p>
             <p className="text-[10px] font-bold text-neutral-600">
               Please send the total order amount to this number and provide your sender phone number and TrxID below:

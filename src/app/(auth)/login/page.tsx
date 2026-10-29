@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Loader } from '@/components/ui/loader';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
 import { toast } from 'sonner';
@@ -85,7 +86,7 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" size="lg" disabled={loading} className="w-full gap-2">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Authenticate / Login'}
+            {loading ? <Loader variant="inline" /> : 'Authenticate / Login'}
           </Button>
         </form>
 

@@ -2,21 +2,10 @@
 
 import Link from 'next/link';
 import { Facebook, Instagram, Youtube, MessageCircle, MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { settingsApi } from '@/lib/api';
+import { useSettings } from '@/hooks/useSettings';
 
 export function Footer() {
-  const { data: settingsRes } = useQuery({
-    queryKey: ['site-settings'],
-    queryFn: async () => {
-      const res = await settingsApi.get();
-      return res.data.data;
-    },
-  });
-
-  const settings = settingsRes;
-  const brandTitle = settings?.title || 'JeansLoop';
-  const tagline = settings?.tagline || 'Engineered denim built for unmatched comfort and lasting durability.';
+  const { siteName: brandTitle, tagline, address, phone, email, businessHours, logo, socialLinks } = useSettings();
 
   return (
     <footer className="bg-black text-neutral-300 border-t-4 border-black">
@@ -25,8 +14,8 @@ export function Footer() {
           {/* Brand & About */}
           <div>
             <div className="flex flex-col items-start gap-2 mb-6">
-              {settings?.logo ? (
-                <img src={settings.logo} alt={brandTitle} className="h-8 w-auto brightness-0 invert" />
+              {logo ? (
+                <img src={logo} alt={brandTitle} className="h-8 w-auto brightness-0 invert" />
               ) : (
                 <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter leading-none">
                   {brandTitle}
@@ -37,23 +26,23 @@ export function Footer() {
 
             {/* Social Icons */}
             <div className="flex gap-4">
-              {settings?.socialLinks?.facebook && (
-                <Link href={settings.socialLinks.facebook} target="_blank" className="hover:text-white transition-colors">
+              {socialLinks.facebook && (
+                <Link href={socialLinks.facebook} target="_blank" className="hover:text-white transition-colors">
                   <Facebook className="h-4 w-4" />
                 </Link>
               )}
-              {settings?.socialLinks?.instagram && (
-                <Link href={settings.socialLinks.instagram} target="_blank" className="hover:text-white transition-colors">
+              {socialLinks.instagram && (
+                <Link href={socialLinks.instagram} target="_blank" className="hover:text-white transition-colors">
                   <Instagram className="h-4 w-4" />
                 </Link>
               )}
-              {settings?.socialLinks?.youtube && (
-                <Link href={settings.socialLinks.youtube} target="_blank" className="hover:text-white transition-colors">
+              {socialLinks.youtube && (
+                <Link href={socialLinks.youtube} target="_blank" className="hover:text-white transition-colors">
                   <Youtube className="h-4 w-4" />
                 </Link>
               )}
-              {settings?.socialLinks?.whatsapp && (
-                <Link href={`https://wa.me/${settings.socialLinks.whatsapp}`} target="_blank" className="hover:text-white transition-colors">
+              {socialLinks.whatsapp && (
+                <Link href={`https://wa.me/${socialLinks.whatsapp.replace(/\D/g, '')}`} target="_blank" className="hover:text-white transition-colors">
                   <MessageCircle className="h-4 w-4" />
                 </Link>
               )}
@@ -80,8 +69,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=trouser" className="hover:text-white transition-colors">
-                  Formal Trousers
+                <Link href="/shop?category=formal" className="hover:text-white transition-colors">
+                  Formal
                 </Link>
               </li>
             </ul>
@@ -128,28 +117,28 @@ export function Footer() {
           <div>
             <h4 className="mb-6 text-[10px] font-black uppercase tracking-[0.25em] text-white">Contact</h4>
             <ul className="space-y-4 text-xs font-medium text-neutral-400">
-              {settings?.address && (
+              {address && (
                 <li className="flex items-start gap-3">
                   <MapPin className="mt-1 h-4 w-4 shrink-0 text-white" />
-                  <span>{settings.address}</span>
+                  <span>{address}</span>
                 </li>
               )}
-              {settings?.phone && (
+              {phone && (
                 <li className="flex items-center gap-3">
                   <Phone className="h-4 w-4 shrink-0 text-white" />
-                  <span>{settings.phone}</span>
+                  <span>{phone}</span>
                 </li>
               )}
-              {settings?.email && (
+              {email && (
                 <li className="flex items-center gap-3">
                   <Mail className="h-4 w-4 shrink-0 text-white" />
-                  <span className="break-all">{settings.email}</span>
+                  <span className="break-all">{email}</span>
                 </li>
               )}
-              {settings?.businessHours && (
+              {businessHours && (
                 <li className="flex items-center gap-3">
                   <Clock className="h-4 w-4 shrink-0 text-white" />
-                  <span>{settings.businessHours}</span>
+                  <span>{businessHours}</span>
                 </li>
               )}
             </ul>

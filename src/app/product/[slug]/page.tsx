@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ProductClient } from './ProductClient';
 import type { Product } from '@/lib/api-types';
+import { getSiteSettings } from '@/lib/settings';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
@@ -73,6 +74,8 @@ export async function generateMetadata({
 
   const primaryImage = product.images?.[0] || '';
   const pageUrl = `/product/${product.slug}`;
+  const settings = await getSiteSettings();
+  const siteTitle = settings.title || 'Store';
 
   return {
     title: product.name,
@@ -80,7 +83,7 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       url: pageUrl,
-      title: `${product.name} | JeansLoop`,
+      title: `${product.name} | ${siteTitle}`,
       description: product.description.slice(0, 160),
       images: primaryImage
         ? [
@@ -95,7 +98,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.name} | JeansLoop`,
+      title: `${product.name} | ${siteTitle}`,
       description: product.description.slice(0, 160),
       images: primaryImage ? [primaryImage] : [],
     },

@@ -10,6 +10,7 @@ import { couponsApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { Loader2, ShieldCheck, Tag } from 'lucide-react';
 import type { CartItem } from '@/store/cart';
+import { useSettings } from '@/hooks/useSettings';
 
 interface OrderSummaryProps {
   items: CartItem[];
@@ -34,6 +35,7 @@ export function OrderSummary({
   termsAccepted,
   setTermsAccepted,
 }: OrderSummaryProps) {
+  const { siteName } = useSettings();
   const [couponCode, setCouponCode] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
 
@@ -183,7 +185,7 @@ export function OrderSummary({
             <Link href="/privacy" target="_blank" className="underline text-black hover:text-neutral-600">
               Privacy Policy
             </Link>{' '}
-            of JeansLoop.
+            of {siteName}.
           </span>
         </label>
 
