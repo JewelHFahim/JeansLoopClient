@@ -26,6 +26,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description,
     keywords: ['clothing', 'mens clothing', 'fashion', 'apparel', title.toLowerCase()],
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/icon.png', type: 'image/png' },
+      ],
+      apple: '/apple-touch-icon.png',
+    },
     openGraph: {
       type: 'website',
       locale: 'en_US',

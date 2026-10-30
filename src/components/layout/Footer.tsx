@@ -147,7 +147,7 @@ export function Footer() {
 
         <div className="mt-16 border-t border-neutral-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-neutral-500">
           <p>&copy; {new Date().getFullYear()} {brandTitle}. All rights reserved.</p>
-          <div className="flex gap-6">
+          <div className="hidden md:flex items-center gap-6">
             <span>Fast Nationwide Delivery</span>
             <span>Cash on Delivery Available</span>
           </div>
