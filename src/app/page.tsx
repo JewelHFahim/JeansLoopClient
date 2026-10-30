@@ -60,18 +60,30 @@ export default async function HomePage() {
       {/* 4. Categorized Collections (All categories rendered in the 33% / 67% showcase layout) */}
       <div className="space-y-6">
         {categories.map((category, index) => {
-          const categoryProducts = allProducts.filter(
-            (p) =>
-              p.category.toLowerCase() === category.name.toLowerCase() ||
-              p.category.toLowerCase() === category.slug.toLowerCase()
-          );
+          const catNameLower = (category.name || '').toLowerCase().trim();
+          const catSlugLower = (category.slug || '').toLowerCase().trim();
+          const catNameClean = catNameLower.replace(/[\s-_]+/g, '');
+          const catSlugClean = catSlugLower.replace(/[\s-_]+/g, '');
+
+          // Strictly filter products belonging to this category
+          const categoryProducts = allProducts.filter((p) => {
+            const pCatLower = (p.category || '').toLowerCase().trim();
+            const pCatClean = pCatLower.replace(/[\s-_]+/g, '');
+            return (
+              pCatLower === catNameLower ||
+              pCatLower === catSlugLower ||
+              (pCatClean.length > 0 && (pCatClean === catNameClean || pCatClean === catSlugClean))
+            );
+          });
+
+          // Only display category section if it has products
+          if (categoryProducts.length === 0) return null;
 
           return (
             <CategorySection
               key={category._id}
               category={category}
               products={categoryProducts}
-              fallbackProducts={allProducts}
               index={index}
               siteName={siteName}
             />

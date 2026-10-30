@@ -313,7 +313,7 @@ export function ProductClient({ product, relatedProducts = [] }: ProductClientPr
                 <div className="flex items-center text-amber-500 fill-amber-500">
                   <Star className="h-3 w-3 fill-amber-500" />
                 </div>
-                <span className="group-hover:text-neutral-700">4.9 (Customer Reviews)</span>
+                <span className="group-hover:text-neutral-700">Customer Reviews</span>
                 <span className="text-[9px] bg-neutral-100 group-hover:bg-black group-hover:text-white px-1.5 py-0.5 border border-black font-bold uppercase transition-colors">
                   {isReviewsOpen ? 'Open' : 'View'}
                 </span>
@@ -554,14 +554,8 @@ export function ProductClient({ product, relatedProducts = [] }: ProductClientPr
               VERIFIED REVIEWS
             </span>
             <div className="flex items-center gap-2">
-              <div className="flex items-center text-amber-500">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-amber-500 text-amber-500" />
-                ))}
-              </div>
-              <span className="text-sm font-black text-black">4.9 / 5.0</span>
-              <span className="text-xs text-neutral-500 font-bold uppercase tracking-wider hidden sm:inline">
-                (Customer Feedback & Ratings)
+              <span className="text-sm font-black text-black uppercase tracking-wider">
+                Customer Reviews & Verified Experiences
               </span>
             </div>
           </div>

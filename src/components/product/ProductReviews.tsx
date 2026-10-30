@@ -46,55 +46,6 @@ interface ProductReviewsProps {
   onClose?: () => void;
 }
 
-// Curated realistic default reviews to ensure pristine presentation on initial render
-const DEFAULT_SAMPLE_REVIEWS: Review[] = [
-  {
-    _id: 'sample-1',
-    productId: '',
-    name: 'Tanvir Hossain',
-    email: 'tanvir@example.com',
-    rating: 5,
-    title: 'Outstanding fabric weight and precision drape',
-    comment:
-      'The denim quality surpassed my expectations. Perfect 13.5oz weight with subtle comfort stretch that does not sag after prolonged wear. Stitching around the coin pocket and waistband is rock-solid.',
-    fit: 'true_to_size',
-    verifiedPurchase: true,
-    helpfulCount: 14,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: 'sample-2',
-    productId: '',
-    name: 'Sazzad Karim',
-    email: 'sazzad@example.com',
-    rating: 5,
-    title: 'Authentic indigo tone, best fit in Bangladesh',
-    comment:
-      'Deep, rich indigo wash that looks even better in person. The taper below the knee is clean and stacks nicely over boots or low-top sneakers. Definitely ordering the second colorway.',
-    fit: 'true_to_size',
-    verifiedPurchase: true,
-    helpfulCount: 9,
-    createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: 'sample-3',
-    productId: '',
-    name: 'Mahmudul Hasan',
-    email: 'mahmud@example.com',
-    rating: 4,
-    title: 'Great craftsmanship and premium hardware',
-    comment:
-      'The custom branded rivets and smooth zipper fly show serious attention to detail. Fit is true to waist size, though slightly snug at the thighs on day one before naturally easing out.',
-    fit: 'true_to_size',
-    verifiedPurchase: true,
-    helpfulCount: 5,
-    createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
 export function ProductReviews({
   productId,
   productSlug,
@@ -102,7 +53,7 @@ export function ProductReviews({
   className,
   onClose,
 }: ProductReviewsProps) {
-  const [reviews, setReviews] = useState<Review[]>(DEFAULT_SAMPLE_REVIEWS);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedStarFilter, setSelectedStarFilter] = useState<number | null>(null);
@@ -129,11 +80,13 @@ export function ProductReviews({
       try {
         const identifier = productId || productSlug;
         const res = await fetchProductReviews(identifier);
-        if (isMounted && res?.data?.reviews?.length > 0) {
-          setReviews(res.data.reviews);
+        if (isMounted) {
+          setReviews(res?.data?.reviews || []);
         }
       } catch {
-        // Fall back gracefully to curated default reviews
+        if (isMounted) {
+          setReviews([]);
+        }
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -153,10 +106,10 @@ export function ProductReviews({
     if (total === 0) {
       return {
         total: 0,
-        average: 5.0,
-        recommendPercentage: 100,
+        average: 0,
+        recommendPercentage: 0,
         breakdown: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } as Record<number, number>,
-        fitPercentage: { true_to_size: 100, runs_small: 0, runs_large: 0 },
+        fitPercentage: { true_to_size: 0, runs_small: 0, runs_large: 0 },
       };
     }
 
@@ -347,7 +300,7 @@ export function ProductReviews({
         <div className="lg:col-span-4 flex flex-col justify-center items-center lg:items-start text-center lg:text-left border-b lg:border-b-0 lg:border-r border-black/15 pb-6 lg:pb-0 lg:pr-8">
           <div className="flex items-baseline gap-2">
             <span className="text-6xl font-black tracking-tighter text-black leading-none">
-              {stats.average.toFixed(1)}
+              {stats.total > 0 ? stats.average.toFixed(1) : '0.0'}
             </span>
             <span className="text-xs font-mono font-bold text-neutral-400">/ 5.0</span>
           </div>
@@ -358,7 +311,7 @@ export function ProductReviews({
               <Star
                 key={star}
                 className={`h-5 w-5 ${
-                  star <= Math.round(stats.average)
+                  stats.total > 0 && star <= Math.round(stats.average)
                     ? 'text-amber-500 fill-amber-500'
                     : 'text-neutral-300 fill-neutral-200'
                 }`}
@@ -367,12 +320,14 @@ export function ProductReviews({
           </div>
 
           <p className="text-xs font-black uppercase tracking-wider text-black">
-            Based on {stats.total} verified {stats.total === 1 ? 'review' : 'reviews'}
+            {stats.total > 0
+              ? `Based on ${stats.total} verified ${stats.total === 1 ? 'review' : 'reviews'}`
+              : 'No verified reviews recorded yet'}
           </p>
 
           <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 border border-black bg-white text-[10px] font-black uppercase tracking-widest text-black">
             <CheckCircle2 className="h-3.5 w-3.5 text-black" />
-            <span>{stats.recommendPercentage}% Recommended</span>
+            <span>{stats.total > 0 ? `${stats.recommendPercentage}% Recommended` : 'Awaiting First Review'}</span>
           </div>
         </div>
 
@@ -708,14 +663,14 @@ export function ProductReviews({
           <div className="p-12 border-2 border-black bg-neutral-50 text-center space-y-3">
             <MessageSquare className="h-8 w-8 mx-auto text-neutral-400" />
             <h4 className="text-sm font-black uppercase tracking-widest text-black">
-              No matching reviews found
+              {selectedStarFilter ? 'No matching reviews found' : 'No Reviews Yet'}
             </h4>
-            <p className="text-xs text-neutral-500 font-medium">
+            <p className="text-xs text-neutral-500 font-medium max-w-sm mx-auto">
               {selectedStarFilter
                 ? `There are currently no ${selectedStarFilter}-star reviews for this item.`
-                : 'Be the first to share your experience with this denim garment.'}
+                : `Be the first to review ${productName}. Share your honest impressions regarding denim weave, weight, fit, and craftsmanship.`}
             </p>
-            {selectedStarFilter !== null && (
+            {selectedStarFilter !== null ? (
               <Button
                 variant="outline"
                 size="sm"
@@ -723,6 +678,14 @@ export function ProductReviews({
                 className="mt-2 text-xs font-black uppercase"
               >
                 Reset Filter
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={() => setIsFormOpen(true)}
+                className="mt-2 text-xs font-black uppercase"
+              >
+                <Plus className="h-4 w-4 mr-1.5" /> Write The First Review
               </Button>
             )}
           </div>

@@ -4,6 +4,7 @@ import { Providers } from '@/components/providers';
 import { AnnouncementBar } from '@/components/layout/AnnouncementBar';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { WhatsAppButton } from '@/components/layout/WhatsAppButton';
 import { FacebookPixel } from '@/components/analytics/FacebookPixel';
 import { PageProgress } from '@/components/layout/PageProgress';
 import { getSiteSettings } from '@/lib/settings';
@@ -93,6 +94,7 @@ export default async function RootLayout({
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
+          <WhatsAppButton />
         </Providers>
       </body>
     </html>

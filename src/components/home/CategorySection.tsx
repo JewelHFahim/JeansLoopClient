@@ -10,7 +10,6 @@ import { useSettings } from '@/hooks/useSettings';
 interface CategorySectionProps {
   category: Category;
   products: Product[];
-  fallbackProducts?: Product[];
   index: number;
   siteName?: string;
 }
@@ -39,7 +38,6 @@ const CATEGORY_TAGLINES: Record<string, string> = {
 export function CategorySection({
   category,
   products,
-  fallbackProducts = [],
   index,
   siteName: propSiteName,
 }: CategorySectionProps) {
@@ -55,17 +53,10 @@ export function CategorySection({
     CATEGORY_TAGLINES[slugKey] ||
     `${category.name} Collection • Premium Quality Craftsmanship`;
 
-  // Use matching products; if fewer than 7, backfill from other products so 4x2 grid is always full
-  let displayProducts = products.length > 0 ? products : [];
-  if (displayProducts.length < 7 && fallbackProducts.length > 0) {
-    const existingIds = new Set(displayProducts.map((p) => p._id));
-    const extra = fallbackProducts.filter((p) => !existingIds.has(p._id));
-    displayProducts = [...displayProducts, ...extra];
-  }
-
-  // Exactly 7 products + 1 "VIEW MORE" card = 8 slots (4 columns x 2 rows)
+  // Strictly display only this category's products (up to 7 items + 1 "VIEW MORE" card)
+  const displayProducts = products || [];
   const cards = displayProducts.slice(0, 7);
-  const totalCount = products.length > 0 ? products.length : displayProducts.length;
+  const totalCount = products.length;
 
   return (
     <section className="container mx-auto px-4 my-10 md:my-14">

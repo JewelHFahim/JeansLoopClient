@@ -54,7 +54,10 @@ export function useSettings() {
 
   // Clean WhatsApp number (e.g. 8801911209322)
   const rawWhatsapp = settings.socialLinks?.whatsapp || phone;
-  const whatsappClean = rawWhatsapp.replace(/\D/g, '');
+  let whatsappClean = rawWhatsapp.replace(/\D/g, '');
+  if (whatsappClean.startsWith('01') && whatsappClean.length === 11) {
+    whatsappClean = '88' + whatsappClean;
+  }
 
   const socialLinks = {
     facebook: settings.socialLinks?.facebook || '',
