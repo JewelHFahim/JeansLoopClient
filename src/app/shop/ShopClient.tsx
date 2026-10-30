@@ -81,24 +81,26 @@ export function ShopClient() {
 
   // Read saved grid & limit from localStorage on initial mount if not in URL
   useEffect(() => {
-    if (!searchParams.get('grid')) {
-      const savedGrid = localStorage.getItem('jeansloop_shop_grid');
-      if (savedGrid) {
-        const parsed = Number(savedGrid);
-        if (parsed === 2 || parsed === 3 || parsed === 4) {
-          setGridCols(parsed as GridOption);
+    try {
+      if (!searchParams.get('grid')) {
+        const savedGrid = localStorage.getItem('jeansloop_shop_grid');
+        if (savedGrid) {
+          const parsed = Number(savedGrid);
+          if (parsed === 2 || parsed === 3 || parsed === 4) {
+            setGridCols(parsed as GridOption);
+          }
         }
       }
-    }
-    if (!searchParams.get('limit')) {
-      const savedLimit = localStorage.getItem('jeansloop_shop_limit');
-      if (savedLimit) {
-        const parsed = Number(savedLimit);
-        if (LIMIT_OPTIONS.includes(parsed as (typeof LIMIT_OPTIONS)[number])) {
-          setLimit(parsed);
+      if (!searchParams.get('limit')) {
+        const savedLimit = localStorage.getItem('jeansloop_shop_limit');
+        if (savedLimit) {
+          const parsed = Number(savedLimit);
+          if (LIMIT_OPTIONS.includes(parsed as (typeof LIMIT_OPTIONS)[number])) {
+            setLimit(parsed);
+          }
         }
       }
-    }
+    } catch {}
   }, []);
 
   const updateFilters = (updates: Record<string, string | number | undefined>) => {

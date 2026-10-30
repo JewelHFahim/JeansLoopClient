@@ -90,11 +90,11 @@ export const useCartStore = create<CartStore>()(
       clearCart: () => set({ items: [] }),
 
       getTotalItems: () => {
-        return get().items.reduce((total, i) => total + i.quantity, 0);
+        return (get().items || []).reduce((total, i) => total + (i?.quantity || 0), 0);
       },
 
       getTotalPrice: () => {
-        return get().items.reduce((total, i) => total + i.price * i.quantity, 0);
+        return (get().items || []).reduce((total, i) => total + (i?.price || 0) * (i?.quantity || 0), 0);
       },
     }),
     {

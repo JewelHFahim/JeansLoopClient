@@ -9,14 +9,14 @@ export function WhatsAppButton() {
   const [isBubbleDismissed, setIsBubbleDismissed] = useState(false);
 
   // Determine active contact number
-  let targetNumber = whatsappClean;
+  let targetNumber = whatsappClean || '';
   if (!targetNumber && phone) {
-    targetNumber = phone.replace(/\D/g, '');
+    targetNumber = String(phone).replace(/\D/g, '');
   }
   if (!targetNumber) {
     targetNumber = '8801911209322';
   }
-  if (targetNumber.startsWith('01') && targetNumber.length === 11) {
+  if (typeof targetNumber === 'string' && targetNumber.startsWith('01') && targetNumber.length === 11) {
     targetNumber = '88' + targetNumber;
   }
 

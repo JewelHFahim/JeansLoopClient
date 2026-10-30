@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { Providers } from '@/components/providers';
 import { AnnouncementBar } from '@/components/layout/AnnouncementBar';
@@ -58,10 +59,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <body className="min-h-screen flex flex-col bg-white" suppressHydrationWarning>
         {FB_PIXEL_ID && (
           <>
-            <script
+            <Script
+              id="fb-pixel"
+              strategy="afterInteractive"
               dangerouslySetInnerHTML={{
                 __html: `
                   !function(f,b,e,v,n,t,s)
@@ -88,8 +91,6 @@ export default async function RootLayout({
             </noscript>
           </>
         )}
-      </head>
-      <body className="min-h-screen flex flex-col bg-white" suppressHydrationWarning>
         <FacebookPixel />
         <Providers>
           <PageProgress />

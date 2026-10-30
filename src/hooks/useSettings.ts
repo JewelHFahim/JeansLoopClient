@@ -53,8 +53,8 @@ export function useSettings() {
   const locationMapUrl = settings.locationMapUrl || '';
 
   // Clean WhatsApp number (e.g. 8801911209322)
-  const rawWhatsapp = settings.socialLinks?.whatsapp || phone;
-  let whatsappClean = rawWhatsapp.replace(/\D/g, '');
+  const rawWhatsapp = settings.socialLinks?.whatsapp || phone || '';
+  let whatsappClean = (rawWhatsapp ? String(rawWhatsapp) : '').replace(/\D/g, '');
   if (whatsappClean.startsWith('01') && whatsappClean.length === 11) {
     whatsappClean = '88' + whatsappClean;
   }

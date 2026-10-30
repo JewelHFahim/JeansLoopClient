@@ -21,16 +21,23 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       isInitialized: false,
       login: (token, user) => {
-        localStorage.setItem('token', token);
+        try {
+          localStorage.setItem('token', token);
+        } catch {}
         set({ token, user, isAuthenticated: true, isInitialized: true });
       },
       logout: () => {
-        localStorage.removeItem('token');
+        try {
+          localStorage.removeItem('token');
+        } catch {}
         authApi.logout().catch(() => {});
         set({ token: null, user: null, isAuthenticated: false, isInitialized: true });
       },
       checkAuth: async () => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        let token: string | null = null;
+        try {
+          token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        } catch {}
         if (!token) {
           set({ token: null, user: null, isAuthenticated: false, isInitialized: true });
           return;
@@ -40,7 +47,9 @@ export const useAuthStore = create<AuthStore>()(
           const res = await authApi.getProfile();
           set({ user: res.data.data, token, isAuthenticated: true, isInitialized: true });
         } catch {
-          localStorage.removeItem('token');
+          try {
+            localStorage.removeItem('token');
+          } catch {}
           set({ token: null, user: null, isAuthenticated: false, isInitialized: true });
         }
       },

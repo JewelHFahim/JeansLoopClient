@@ -22,10 +22,12 @@ export const apiClient = axios.create({
 // Attach access token
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch {}
   }
   return config;
 });
@@ -60,7 +62,7 @@ apiClient.interceptors.response.use(
 
       // If the 401 came from login/refresh itself, do not loop
       if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/refresh')) {
-        localStorage.removeItem('token');
+        try { localStorage.removeItem('token'); } catch {}
         return Promise.reject(error);
       }
 
@@ -86,7 +88,7 @@ apiClient.interceptors.response.use(
         );
 
         const newToken = data.data.token;
-        localStorage.setItem('token', newToken);
+        try { localStorage.setItem('token', newToken); } catch {}
         apiClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
         processQueue(null, newToken);
 
@@ -94,7 +96,7 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem('token');
+        try { localStorage.removeItem('token'); } catch {}
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
