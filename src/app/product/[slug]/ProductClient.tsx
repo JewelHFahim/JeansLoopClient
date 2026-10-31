@@ -41,9 +41,11 @@ export function ProductClient({ product, relatedProducts = [] }: ProductClientPr
     product.variants?.[0]?.color?.trim() ||
     '';
 
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    product.variants?.[0] || null
-  );
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(() => {
+    if (!product.variants || product.variants.length === 0) return null;
+    const firstInStock = product.variants.find((v) => v.stock > 0);
+    return firstInStock || product.variants[0];
+  });
 
   const [selectedImage, setSelectedImage] = useState(product.images?.[0] || '');
   const [quantity, setQuantity] = useState(1);

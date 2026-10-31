@@ -7,36 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import type { Review } from '@/lib/api-types';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
-
-async function fetchProductReviews(identifier: string) {
-  const res = await fetch(`${API_URL}/reviews/product/${identifier}`, {
-    cache: 'no-store',
-  });
-  if (!res.ok) throw new Error('Failed to fetch reviews');
-  return res.json();
-}
-
-async function submitReviewApi(payload: any) {
-  const res = await fetch(`${API_URL}/reviews`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    throw new Error(errorData?.message || 'Failed to submit review');
-  }
-  return res.json();
-}
-
-async function voteHelpfulApi(reviewId: string) {
-  const res = await fetch(`${API_URL}/reviews/${reviewId}/helpful`, {
-    method: 'POST',
-  });
-  return res.json();
-}
+import { reviewsApi } from '@/lib/api';
 
 interface ProductReviewsProps {
   productId: string;
@@ -79,9 +50,9 @@ export function ProductReviews({
       setIsLoading(true);
       try {
         const identifier = productId || productSlug;
-        const res = await fetchProductReviews(identifier);
+        const res = await reviewsApi.getByProduct(identifier);
         if (isMounted) {
-          setReviews(res?.data?.reviews || []);
+          setReviews(res.data.data?.reviews || []);
         }
       } catch {
         if (isMounted) {
@@ -201,27 +172,8 @@ export function ProductReviews({
     };
 
     try {
-      let createdReview: Review;
-      try {
-        const res = await submitReviewApi(newReviewPayload);
-        createdReview = res.data;
-      } catch {
-        // Optimistic fallback if backend endpoint is unavailable
-        createdReview = {
-          _id: `user-rev-${Date.now()}`,
-          productId: productId || productSlug,
-          name: formName.trim(),
-          email: formEmail.trim(),
-          rating: formRating,
-          title: formTitle.trim(),
-          comment: formComment.trim(),
-          fit: formFit,
-          verifiedPurchase: true,
-          helpfulCount: 0,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-      }
+      const res = await reviewsApi.create(newReviewPayload);
+      const createdReview = res.data.data;
 
       setReviews((prev) => [createdReview, ...prev]);
       toast.success('Thank you! Your review has been published.');
@@ -253,7 +205,7 @@ export function ProductReviews({
     );
 
     try {
-      await voteHelpfulApi(reviewId);
+      await reviewsApi.voteHelpful(reviewId);
     } catch {
       // Ignored for offline optimistic vote
     }
@@ -691,7 +643,8 @@ export function ProductReviews({
           </div>
         ) : (
           displayedReviews.map((review) => {
-            const initials = review.name
+            const safeName = (review.name || 'Verified Customer').trim();
+            const initials = safeName
               .split(' ')
               .map((part) => part[0])
               .filter(Boolean)

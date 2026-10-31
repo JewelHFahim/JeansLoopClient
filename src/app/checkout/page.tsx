@@ -117,10 +117,26 @@ export default function CheckoutPage() {
           });
           login(regRes.data.data.token, regRes.data.data.user);
         } catch (regErr: any) {
-          const message = regErr.response?.data?.message || 'Registration failed';
-          toast.error(message);
-          setLoading(false);
-          return;
+          // If email is already registered, attempt seamless inline login with the provided password
+          if (regErr.response?.status === 409 || regErr.response?.data?.code === 'EMAIL_IN_USE') {
+            try {
+              const loginRes = await authApi.login({
+                email: formData.email,
+                password,
+              });
+              login(loginRes.data.data.token, loginRes.data.data.user);
+              toast.info('Recognized existing account. Signed in automatically.');
+            } catch {
+              toast.error('An account already exists with this email. Please enter your account password to verify and proceed.');
+              setLoading(false);
+              return;
+            }
+          } else {
+            const message = regErr.response?.data?.message || 'Registration failed';
+            toast.error(message);
+            setLoading(false);
+            return;
+          }
         }
       }
 

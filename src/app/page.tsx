@@ -13,7 +13,7 @@ async function getHomeData() {
       fetch(`${API_URL}/categories`, { next: { revalidate: 60 } }),
       fetch(`${API_URL}/sliders/active`, { next: { revalidate: 60 } }),
       fetch(`${API_URL}/products?hasDiscount=true&limit=8`, { next: { revalidate: 60 } }),
-      fetch(`${API_URL}/products?limit=50`, { next: { revalidate: 60 } }),
+      fetch(`${API_URL}/products?limit=100`, { next: { revalidate: 60 } }),
     ]);
 
     const categories = categoriesRes.ok ? (await categoriesRes.json()).data : [];
