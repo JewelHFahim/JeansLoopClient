@@ -8,6 +8,13 @@ declare global {
 }
 
 /**
+ * Generate a unique event ID for deduplication between Pixel & Conversions API
+ */
+export const generateEventId = (prefix: string = 'evt'): string => {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+};
+
+/**
  * Trigger PageView event
  */
 export const pageview = () => {
@@ -19,19 +26,36 @@ export const pageview = () => {
 /**
  * Trigger standard Facebook event
  * E.g., ViewContent, AddToCart, InitiateCheckout, Purchase, Search, Contact
+ * Supports 4th parameter { eventID } for Meta Conversions API deduplication
  */
-export const event = (name: string, options: Record<string, any> = {}) => {
+export const event = (
+  name: string,
+  options: Record<string, any> = {},
+  eventId?: string
+) => {
   if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-    window.fbq('track', name, options);
+    if (eventId) {
+      window.fbq('track', name, options, { eventID: eventId });
+    } else {
+      window.fbq('track', name, options);
+    }
   }
 };
 
 /**
  * Trigger custom Facebook event
  */
-export const customEvent = (name: string, options: Record<string, any> = {}) => {
+export const customEvent = (
+  name: string,
+  options: Record<string, any> = {},
+  eventId?: string
+) => {
   if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-    window.fbq('trackCustom', name, options);
+    if (eventId) {
+      window.fbq('trackCustom', name, options, { eventID: eventId });
+    } else {
+      window.fbq('trackCustom', name, options);
+    }
   }
 };
 
@@ -47,15 +71,21 @@ export interface ViewContentParams {
   currency?: string;
 }
 
-export const trackViewContent = (params: ViewContentParams) => {
-  event('ViewContent', {
-    content_name: params.name,
-    content_category: params.category || 'Apparel & Accessories > Clothing',
-    content_ids: [params.id],
-    content_type: 'product',
-    value: params.price,
-    currency: params.currency || 'BDT',
-  });
+export const trackViewContent = (params: ViewContentParams, eventId?: string) => {
+  const safePrice = Number(Number(params.price || 0).toFixed(2));
+  event(
+    'ViewContent',
+    {
+      content_name: params.name,
+      content_category: params.category || 'Apparel & Accessories > Clothing',
+      content_ids: [params.id],
+      content_type: 'product',
+      contents: [{ id: params.id, quantity: 1, item_price: safePrice }],
+      value: safePrice,
+      currency: params.currency || 'BDT',
+    },
+    eventId
+  );
 };
 
 export interface AddToCartParams {
@@ -66,32 +96,49 @@ export interface AddToCartParams {
   currency?: string;
 }
 
-export const trackAddToCart = (params: AddToCartParams) => {
+export const trackAddToCart = (params: AddToCartParams, eventId?: string) => {
   const qty = params.quantity || 1;
-  event('AddToCart', {
-    content_name: params.name,
-    content_ids: [params.id],
-    content_type: 'product',
-    value: params.price * qty,
-    currency: params.currency || 'BDT',
-  });
+  const unitPrice = Number(Number(params.price || 0).toFixed(2));
+  const totalValue = Number((unitPrice * qty).toFixed(2));
+  event(
+    'AddToCart',
+    {
+      content_name: params.name,
+      content_ids: [params.id],
+      content_type: 'product',
+      contents: [{ id: params.id, quantity: qty, item_price: unitPrice }],
+      value: totalValue,
+      currency: params.currency || 'BDT',
+    },
+    eventId
+  );
 };
 
 export interface InitiateCheckoutParams {
   value: number;
   num_items: number;
   content_ids?: string[];
+  contents?: Array<{ id: string; quantity: number; item_price?: number }>;
   currency?: string;
 }
 
-export const trackInitiateCheckout = (params: InitiateCheckoutParams) => {
-  event('InitiateCheckout', {
-    content_ids: params.content_ids || [],
-    content_type: 'product',
-    num_items: params.num_items,
-    value: params.value,
-    currency: params.currency || 'BDT',
-  });
+export const trackInitiateCheckout = (
+  params: InitiateCheckoutParams,
+  eventId?: string
+) => {
+  const safeValue = Number(Number(params.value || 0).toFixed(2));
+  event(
+    'InitiateCheckout',
+    {
+      content_ids: params.content_ids || [],
+      contents: params.contents || [],
+      content_type: 'product',
+      num_items: params.num_items,
+      value: safeValue,
+      currency: params.currency || 'BDT',
+    },
+    eventId
+  );
 };
 
 export interface PurchaseParams {
@@ -99,29 +146,45 @@ export interface PurchaseParams {
   value: number;
   num_items?: number;
   content_ids?: string[];
+  contents?: Array<{ id: string; quantity: number; item_price?: number }>;
   currency?: string;
 }
 
-export const trackPurchase = (params: PurchaseParams) => {
-  event('Purchase', {
-    order_id: params.order_id,
-    content_type: 'product',
-    content_ids: params.content_ids || [],
-    num_items: params.num_items,
-    value: params.value,
-    currency: params.currency || 'BDT',
-  });
+export const trackPurchase = (params: PurchaseParams, eventId?: string) => {
+  const safeValue = Number(Number(params.value || 0).toFixed(2));
+  const dedupId = eventId || params.order_id;
+  event(
+    'Purchase',
+    {
+      order_id: params.order_id,
+      content_type: 'product',
+      content_ids: params.content_ids || [],
+      contents: params.contents || [],
+      num_items: params.num_items,
+      value: safeValue,
+      currency: params.currency || 'BDT',
+    },
+    dedupId
+  );
 };
 
-export const trackSearch = (query: string) => {
+export const trackSearch = (query: string, eventId?: string) => {
   if (!query || !query.trim()) return;
-  event('Search', {
-    search_string: query.trim(),
-  });
+  event(
+    'Search',
+    {
+      search_string: query.trim(),
+    },
+    eventId
+  );
 };
 
-export const trackContact = (method: string = 'web_form') => {
-  event('Contact', {
-    method,
-  });
+export const trackContact = (method: string = 'web_form', eventId?: string) => {
+  event(
+    'Contact',
+    {
+      method,
+    },
+    eventId
+  );
 };

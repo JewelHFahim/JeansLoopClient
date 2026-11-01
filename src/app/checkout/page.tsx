@@ -56,6 +56,11 @@ export default function CheckoutPage() {
         value: getTotalPrice(),
         num_items: items.reduce((sum, item) => sum + item.quantity, 0),
         content_ids: items.map((item) => item.productId),
+        contents: items.map((item) => ({
+          id: item.productId,
+          quantity: item.quantity,
+          item_price: item.price,
+        })),
         currency: 'BDT',
       });
     }
@@ -170,14 +175,27 @@ export default function CheckoutPage() {
       const res = await ordersApi.create(orderPayload);
       const createdOrder = res.data.data.order;
 
-      // Track Meta Pixel Purchase event
-      trackPurchase({
-        order_id: createdOrder._id,
-        value: createdOrder.totalAmount || (getTotalPrice() + shippingFee),
-        num_items: items.reduce((sum, item) => sum + item.quantity, 0),
-        content_ids: items.map((item) => item.productId),
-        currency: 'BDT',
-      });
+      // Track Meta Pixel Purchase event with item breakdown & deduplication key
+      const purchaseValue =
+        typeof createdOrder?.totalAmount === 'number' && createdOrder.totalAmount > 0
+          ? createdOrder.totalAmount
+          : getTotalPrice() + shippingFee;
+
+      trackPurchase(
+        {
+          order_id: createdOrder._id,
+          value: purchaseValue,
+          num_items: items.reduce((sum, item) => sum + item.quantity, 0),
+          content_ids: items.map((item) => item.productId),
+          contents: items.map((item) => ({
+            id: item.productId,
+            quantity: item.quantity,
+            item_price: item.price,
+          })),
+          currency: 'BDT',
+        },
+        createdOrder._id
+      );
 
       clearCart();
       toast.success('Order placed successfully!');
