@@ -126,6 +126,8 @@ export const productsApi = {
   getAll: (params?: Record<string, unknown>) =>
     apiClient.get<PaginatedResponse<Product>>('/products', { params }),
   getBySlug: (slug: string) => apiClient.get<ApiResponse<Product>>(`/products/${slug}`),
+  getSizes: (category?: string) =>
+    apiClient.get<ApiResponse<string[]>>('/products/sizes', { params: { category } }),
 };
 
 export const categoriesApi = {

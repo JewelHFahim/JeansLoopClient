@@ -10,7 +10,10 @@ import { FacebookPixel } from '@/components/analytics/FacebookPixel';
 import { PageProgress } from '@/components/layout/PageProgress';
 import { getSiteSettings } from '@/lib/settings';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jeansloop.com';
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jeansloop.com';
+const siteUrl = rawSiteUrl.startsWith('http://') || rawSiteUrl.startsWith('https://')
+  ? rawSiteUrl
+  : `https://${rawSiteUrl}`;
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,8 +22,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const tagline = settings.tagline || 'Modern Fashion & Apparel';
   const description = `Shop high-quality collections at ${title}. Precision craftsmanship and exceptional comfort.`;
 
+  let metadataBaseUrl: URL;
+  try {
+    metadataBaseUrl = new URL(siteUrl);
+  } catch {
+    metadataBaseUrl = new URL('https://jeansloop.com');
+  }
+
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase: metadataBaseUrl,
     title: {
       default: `${title} | ${tagline}`,
       template: `%s | ${title}`,

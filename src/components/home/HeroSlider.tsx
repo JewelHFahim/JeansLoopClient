@@ -14,7 +14,7 @@ const defaultSlides: Slider[] = [
     _id: 'default-1',
     title: 'Elevate Your Everyday',
     subtitle: 'Premium menswear designed for the modern gentleman. Discover quality craftsmanship and contemporary style.',
-    image: 'https://images.unsplash.com/photo-1542272604-780c96856592?q=80&w=1920&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1920&auto=format&fit=crop',
     primaryCta: { text: 'Browse Denim', href: '/shop?category=jeans' },
     secondaryCta: { text: 'All Collections', href: '/shop' },
     order: 1,
