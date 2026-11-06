@@ -79,13 +79,27 @@ function DesktopNavLinksFallback() {
   );
 }
 
-export function Navbar() {
+interface NavbarProps {
+  initialBrandTitle?: string;
+  initialTagline?: string;
+  initialLogo?: string;
+}
+
+export function Navbar({
+  initialBrandTitle,
+  initialTagline,
+  initialLogo,
+}: NavbarProps = {}) {
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const totalItems = useCartStore((state) => state.getTotalItems());
   const { isAuthenticated, logout } = useAuthStore();
-  const { siteName: brandTitle, tagline: brandTagline, logo } = useSettings();
+  const { siteName: clientTitle, tagline: clientTagline, logo: clientLogo } = useSettings();
+
+  const brandTitle = clientTitle || initialBrandTitle || 'Fire Cutter';
+  const brandTagline = clientTagline || initialTagline || 'Export Mens clothing';
+  const logo = clientLogo || initialLogo || '';
 
   useEffect(() => {
     setMounted(true);

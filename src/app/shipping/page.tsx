@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ShippingPage() {
   const settings = await getSiteSettings();
-  const siteName = settings.title || 'JeansLoop';
+  const siteName = settings.title || 'Fire Cutter';
   const phone = settings.phone || '+8801911209322';
   const whatsappClean = (settings.socialLinks?.whatsapp || phone).replace(/\D/g, '');
 

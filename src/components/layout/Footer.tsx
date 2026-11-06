@@ -4,8 +4,21 @@ import Link from 'next/link';
 import { Facebook, Instagram, Youtube, MessageCircle, MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 
-export function Footer() {
-  const { siteName: brandTitle, tagline, address, phone, email, businessHours, logo, socialLinks } = useSettings();
+interface FooterProps {
+  initialTitle?: string;
+  initialTagline?: string;
+  initialLogo?: string;
+}
+
+export function Footer({
+  initialTitle,
+  initialTagline,
+  initialLogo,
+}: FooterProps = {}) {
+  const { siteName: clientTitle, tagline: clientTagline, address, phone, email, businessHours, logo: clientLogo, socialLinks } = useSettings();
+  const brandTitle = clientTitle || initialTitle || 'Fire Cutter';
+  const tagline = clientTagline || initialTagline || 'Export Mens clothing';
+  const logo = clientLogo || initialLogo || '';
 
   return (
     <footer className="bg-black text-neutral-300 border-t-4 border-black">

@@ -44,7 +44,7 @@ export default async function HomePage() {
     getSiteSettings(),
   ]);
   const { categories, sliders, discountProducts, allProducts } = homeData;
-  const siteName = settings.title || 'JeansLoop';
+  const siteName = settings.title || 'Fire Cutter';
 
   return (
     <div className="pb-16 bg-white">

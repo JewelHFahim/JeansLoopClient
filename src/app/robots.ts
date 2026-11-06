@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://jeansloop.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://thefirecutter.store';
 
 export default function robots(): MetadataRoute.Robots {
   return {

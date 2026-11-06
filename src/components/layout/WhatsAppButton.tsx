@@ -21,7 +21,7 @@ export function WhatsAppButton() {
   }
 
   const message = encodeURIComponent(
-    `Hello ${siteName || 'JeansLoop'}, I would like to inquire about your products.`
+    `Hello ${siteName || 'Fire Cutter'}, I would like to inquire about your products.`
   );
   const whatsappUrl = `https://wa.me/${targetNumber}?text=${message}`;
 

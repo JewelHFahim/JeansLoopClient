@@ -10,7 +10,7 @@ import { FacebookPixel } from '@/components/analytics/FacebookPixel';
 import { PageProgress } from '@/components/layout/PageProgress';
 import { getSiteSettings } from '@/lib/settings';
 
-const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jeansloop.com';
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thefirecutter.store';
 const siteUrl = rawSiteUrl.startsWith('http://') || rawSiteUrl.startsWith('https://')
   ? rawSiteUrl
   : `https://${rawSiteUrl}`;
@@ -18,15 +18,15 @@ const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
-  const title = settings.title || 'Store';
-  const tagline = settings.tagline || 'Modern Fashion & Apparel';
+  const title = settings.title || 'Fire Cutter';
+  const tagline = settings.tagline || 'Export Mens clothing';
   const description = `Shop high-quality collections at ${title}. Precision craftsmanship and exceptional comfort.`;
 
   let metadataBaseUrl: URL;
   try {
     metadataBaseUrl = new URL(siteUrl);
   } catch {
-    metadataBaseUrl = new URL('https://jeansloop.com');
+    metadataBaseUrl = new URL('https://thefirecutter.store');
   }
 
   return {
@@ -109,9 +109,17 @@ export default async function RootLayout({
             initialEnabled={settings.announcementEnabled !== false}
             initialLink={settings.announcementLink || ''}
           />
-          <Navbar />
+          <Navbar
+            initialBrandTitle={settings.title}
+            initialTagline={settings.tagline}
+            initialLogo={settings.logo}
+          />
           <main className="flex-1">{children}</main>
-          <Footer />
+          <Footer
+            initialTitle={settings.title}
+            initialTagline={settings.tagline}
+            initialLogo={settings.logo}
+          />
           <WhatsAppButton />
         </Providers>
       </body>

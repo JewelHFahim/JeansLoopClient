@@ -13,8 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TermsPage() {
   const settings = await getSiteSettings();
-  const siteName = settings.title || 'JeansLoop';
-  const email = settings.email || 'info@jeansloop.com';
+  const siteName = settings.title || 'Fire Cutter';
+  const email = settings.email || 'thefirecutter@gmail.com';
 
   return (
     <TermsClient

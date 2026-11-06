@@ -13,8 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ReturnsPage() {
   const settings = await getSiteSettings();
-  const siteName = settings.title || 'JeansLoop';
-  const email = settings.email || 'info@jeansloop.com';
+  const siteName = settings.title || 'Fire Cutter';
+  const email = settings.email || 'thefirecutter@gmail.com';
   const phone = settings.phone || '+8801911209322';
   const businessHours = settings.businessHours || '10:00 AM – 08:00 PM';
   const whatsappClean = (settings.socialLinks?.whatsapp || phone).replace(/\D/g, '');

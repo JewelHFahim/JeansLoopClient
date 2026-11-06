@@ -5,22 +5,22 @@ import { settingsApi } from '@/lib/api';
 import type { SiteSettings } from '@/lib/api-types';
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  title: 'JeansLoop',
-  tagline: 'Premium Denim & Modern Menswear',
+  title: 'Fire Cutter',
+  tagline: 'Export Mens clothing',
   logo: '',
-  email: 'info@jeansloop.com',
+  email: 'thefirecutter@gmail.com',
   phone: '+8801911209322',
-  address: 'Dhaka, Bangladesh',
+  address: 'Border Bazar, South Monipur, Mirpur, Dhaka',
   locationMapUrl: '',
-  businessHours: '10:00 AM - 08:00 PM',
-  announcement: 'Welcome to our store — Premium Quality Guaranteed',
-  announcementEnabled: true,
+  businessHours: '10:00 AM - 10:00 PM',
+  announcement: '',
+  announcementEnabled: false,
   announcementLink: '',
   socialLinks: {
-    facebook: '',
+    facebook: 'https://www.facebook.com/firecutter',
     instagram: '',
     youtube: '',
-    whatsapp: '',
+    whatsapp: '+8801911209322',
     tiktok: '',
   },
 };
