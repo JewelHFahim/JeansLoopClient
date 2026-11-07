@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import type { Category, Product } from '@/lib/api-types';
 import { useSettings } from '@/hooks/useSettings';
@@ -102,8 +102,7 @@ export function CategorySection({
 
             {/* Top Campaign Typography & Badge */}
             <div className="relative z-10 p-5 sm:p-7 space-y-2">
-              <div className="inline-flex items-center gap-1.5 bg-amber-400 text-black px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                <Sparkles className="w-3 h-3" />
+              <div className="inline-flex items-center bg-amber-400 text-black px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                 {category.name.toUpperCase()} COLLECTION
               </div>
               <p className="text-[9px] font-mono font-bold tracking-[0.25em] text-neutral-300 uppercase">

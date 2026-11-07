@@ -237,7 +237,7 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     required
-                    className="w-full rounded-none border-2 border-black bg-white px-4 py-3 text-xs font-bold uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black resize-y"
+                    className="w-full rounded-none border-2 border-black bg-white px-4 py-3 text-xs font-bold placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black resize-y"
                   />
                 </div>
 

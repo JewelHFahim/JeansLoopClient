@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Star, ThumbsUp, CheckCircle2, Plus, X, MessageSquare, ChevronDown, Sparkles } from 'lucide-react';
+import { Star, ThumbsUp, CheckCircle2, Plus, X, MessageSquare, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

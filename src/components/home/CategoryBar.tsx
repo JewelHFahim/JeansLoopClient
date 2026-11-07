@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import type { Category } from '@/lib/api-types';
 
 interface CategoryBarProps {
@@ -129,15 +129,12 @@ export function CategoryBar({ categories, isLoading = false, className = '' }: C
               className="group flex flex-col items-center gap-1.5 sm:gap-2 shrink-0 select-none cursor-pointer"
             >
               <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px] rounded-2xl p-[3px] bg-white/70 backdrop-blur-sm shadow-xs border border-white/80 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-md group-hover:border-black/30 group-hover:ring-2 group-hover:ring-black/10 overflow-hidden">
-                <div className="w-full h-full rounded-xl overflow-hidden relative bg-black">
+                <div className="w-full h-full rounded-xl overflow-hidden relative bg-neutral-100">
                   <img
                     src={ALL_PRODUCTS_IMAGE}
                     alt="All Products"
-                    className="w-full h-full object-cover opacity-75 transition-transform duration-700 ease-out group-hover:scale-115 group-hover:opacity-60"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-115"
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-amber-300 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
-                  </div>
                 </div>
               </div>
               <div className="flex flex-col items-center">

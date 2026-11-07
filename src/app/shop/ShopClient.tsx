@@ -20,7 +20,6 @@ import {
   X,
   Check,
   RotateCcw,
-  Sparkles,
 } from 'lucide-react';
 
 type GridOption = 2 | 3 | 4;
@@ -352,7 +351,7 @@ export function ShopClient() {
         {/* Search, Sort & Mobile Filters Button */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Input
-            placeholder="SEARCH..."
+            placeholder="Search products..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="w-full sm:w-48 md:w-56 h-9 text-[10px]"
@@ -769,10 +768,7 @@ export function ShopClient() {
                 }
                 className="w-3.5 h-3.5 rounded-none border-2 border-black accent-black cursor-pointer"
               />
-              <span className="flex items-center gap-1.5">
-                <span>Sale / Discounted</span>
-                <Sparkles className="w-3 h-3 text-amber-600" />
-              </span>
+              <span>Sale / Discounted</span>
             </label>
           </div>
 
