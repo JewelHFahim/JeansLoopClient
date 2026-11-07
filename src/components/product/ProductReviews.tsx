@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Star, ThumbsUp, CheckCircle2, Plus, X, MessageSquare, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { Star, ThumbsUp, CheckCircle2, Plus, X, MessageSquare, ChevronDown, Lock, Clock, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import type { Review } from '@/lib/api-types';
 import { reviewsApi } from '@/lib/api';
+import { useAuthStore } from '@/store/auth';
 
 interface ProductReviewsProps {
   productId: string;
@@ -24,9 +26,11 @@ export function ProductReviews({
   className,
   onClose,
 }: ProductReviewsProps) {
+  const { user, isAuthenticated } = useAuthStore();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [submittedPending, setSubmittedPending] = useState(false);
   const [selectedStarFilter, setSelectedStarFilter] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<'newest' | 'highest' | 'lowest' | 'helpful'>('newest');
 
@@ -39,6 +43,14 @@ export function ProductReviews({
   const [formComment, setFormComment] = useState('');
   const [formFit, setFormFit] = useState<'true_to_size' | 'runs_small' | 'runs_large'>('true_to_size');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Auto-fill user credentials when authenticated
+  useEffect(() => {
+    if (user && isFormOpen) {
+      if (!formName) setFormName(user.name || '');
+      if (!formEmail) setFormEmail(user.email || '');
+    }
+  }, [user, isFormOpen]);
 
   // Helpful voted tracking
   const [votedHelpful, setVotedHelpful] = useState<Record<string, boolean>>({});
@@ -146,6 +158,11 @@ export function ProductReviews({
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isAuthenticated) {
+      toast.error('Please log in to submit a review');
+      return;
+    }
+
     if (!formName.trim()) {
       toast.error('Please enter your name');
       return;
@@ -172,17 +189,15 @@ export function ProductReviews({
     };
 
     try {
-      const res = await reviewsApi.create(newReviewPayload);
-      const createdReview = res.data.data;
-
-      setReviews((prev) => [createdReview, ...prev]);
-      toast.success('Thank you! Your review has been published.');
+      await reviewsApi.create(newReviewPayload);
+      setSubmittedPending(true);
+      toast.success(
+        'Thank you! Your review has been submitted for moderation and will appear once approved by our team.'
+      );
 
       // Reset form
       setFormTitle('');
       setFormComment('');
-      setFormName('');
-      setFormEmail('');
       setFormRating(5);
       setIsFormOpen(false);
     } catch (err: any) {
@@ -380,29 +395,99 @@ export function ProductReviews({
         </div>
       </div>
 
+      {/* 2.5 Submission Confirmation / Moderation Notice */}
+      {submittedPending && (
+        <div className="border-2 border-black bg-amber-50 p-4 sm:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-start gap-3 animate-in fade-in-50 duration-200">
+          <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <h4 className="text-xs font-black uppercase tracking-wider text-black">
+              Review Submitted for Moderation
+            </h4>
+            <p className="text-xs text-neutral-600 font-medium mt-1 leading-relaxed">
+              Thank you for sharing your experience. To maintain authenticity and prevent spam, customer reviews are moderated by our team before appearing publicly on this product page.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSubmittedPending(false)}
+            className="p-1 hover:bg-amber-100 text-neutral-500 hover:text-black transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* 3. Review Submission Drawer */}
       {isFormOpen && (
-        <form
-          onSubmit={handleSubmitReview}
-          className="border-2 border-black p-6 md:p-8 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-6 animate-in fade-in-50 duration-200"
-        >
-          <div className="flex items-center justify-between border-b border-black/15 pb-3">
-            <div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-black">
-                Write A Customer Review
-              </h3>
-              <p className="text-[11px] text-neutral-500 font-medium">
-                Share your honest impressions regarding denim weave, weight, fit, and craftsmanship.
-              </p>
+        !isAuthenticated ? (
+          <div className="border-2 border-black p-6 md:p-8 bg-neutral-50 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-4 animate-in fade-in-50 duration-200">
+            <div className="flex items-center justify-between border-b border-black/15 pb-3">
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-black" />
+                <h3 className="text-sm font-black uppercase tracking-widest text-black">
+                  Sign In Required to Review
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsFormOpen(false)}
+                className="p-1 hover:bg-neutral-200 border border-transparent hover:border-black transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsFormOpen(false)}
-              className="p-1 hover:bg-neutral-100 border border-transparent hover:border-black transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <p className="text-xs text-neutral-600 font-medium leading-relaxed max-w-xl">
+              Only authenticated, logged-in customers can submit reviews for JeansLoop products to ensure genuine garment wear feedback and verified purchase status.
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                href={`/login?redirect=/product/${productSlug}#reviews-content`}
+                className="h-10 px-5 bg-black text-white text-xs font-black uppercase tracking-wider flex items-center justify-center hover:bg-neutral-800 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              >
+                Sign In To Review
+              </Link>
+              <Link
+                href={`/register?redirect=/product/${productSlug}#reviews-content`}
+                className="h-10 px-5 bg-white border-2 border-black text-black text-xs font-black uppercase tracking-wider flex items-center justify-center hover:bg-neutral-100 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              >
+                Create Account
+              </Link>
+            </div>
           </div>
+        ) : (
+          <form
+            onSubmit={handleSubmitReview}
+            className="border-2 border-black p-6 md:p-8 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-6 animate-in fade-in-50 duration-200"
+          >
+            <div className="flex items-center justify-between border-b border-black/15 pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-black">
+                    Write A Customer Review
+                  </h3>
+                  <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                    <UserCheck className="w-3 h-3" />
+                    Verified Customer
+                  </span>
+                </div>
+                <p className="text-[11px] text-neutral-500 font-medium mt-0.5">
+                  Reviewing as <strong className="text-black">{user?.name || formName}</strong> ({user?.email || formEmail}).
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsFormOpen(false)}
+                className="p-1 hover:bg-neutral-100 border border-transparent hover:border-black transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Note about admin moderation */}
+            <div className="bg-amber-50 border border-amber-200 p-3 text-[11px] text-amber-900 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-700 shrink-0" />
+              <span>Reviews are submitted for administrative approval before publishing publicly.</span>
+            </div>
 
           {/* Interactive Star Picker */}
           <div className="space-y-2">
@@ -545,10 +630,11 @@ export function ProductReviews({
               disabled={isSubmitting}
               className="h-11 text-xs font-black uppercase tracking-wider px-6"
             >
-              {isSubmitting ? 'Publishing...' : 'Submit Review'}
+              {isSubmitting ? 'Submitting...' : 'Submit For Approval'}
             </Button>
           </div>
         </form>
+        )
       )}
 
       {/* 4. Filter Tabs and Sorting Bar */}
