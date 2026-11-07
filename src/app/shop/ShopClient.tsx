@@ -59,10 +59,10 @@ export function ShopClient() {
     return 12;
   });
 
-  // Grid columns (default: 3, choices: 2 [Large], 3 [Standard], 4 [Compact])
+  // Grid columns (default: 4, choices: 2 [Large], 3 [Standard], 4 [4 Products Grid])
   const [gridCols, setGridCols] = useState<GridOption>(() => {
     if (gridParam === 2 || gridParam === 3 || gridParam === 4) return gridParam as GridOption;
-    return 3;
+    return 4;
   });
 
   const [searchInput, setSearchInput] = useState(initialKeyword);
@@ -156,7 +156,7 @@ export function ShopClient() {
     try {
       localStorage.setItem('jeansloop_shop_grid', String(cols));
     } catch {}
-    updateFilters({ grid: cols === 3 ? undefined : cols });
+    updateFilters({ grid: cols === 4 ? undefined : cols });
   };
 
   const handleLimitChange = (newLimit: number) => {
@@ -314,11 +314,11 @@ export function ShopClient() {
     switch (gridCols) {
       case 2:
         return 'grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6';
-      case 4:
-        return 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4';
       case 3:
-      default:
         return 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-5';
+      case 4:
+      default:
+        return 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4';
     }
   };
 
@@ -833,7 +833,7 @@ export function ShopClient() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleGridChange(3)}
+                    onClick={() => handleGridChange(4)}
                     title="2 Columns (Grid View)"
                     aria-label="Two column view"
                     className={`h-7 px-2 flex items-center gap-1 text-[10px] font-black transition-colors border-l-2 border-black ${
@@ -1032,7 +1032,7 @@ export function ShopClient() {
           {/* Products Grid Content */}
           {isLoading ? (
             <div className={`grid ${getGridClass()} gap-4`}>
-              {Array.from({ length: Math.min(limit, 6) }).map((_, i) => (
+              {Array.from({ length: Math.min(limit, 8) }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
             </div>
