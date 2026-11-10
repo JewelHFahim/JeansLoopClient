@@ -20,6 +20,7 @@ import {
   X,
   Check,
   RotateCcw,
+  Search,
 } from 'lucide-react';
 
 type GridOption = 2 | 3 | 4;
@@ -85,13 +86,22 @@ export function ShopClient() {
 
   // Sync debounced search to URL query parameter and trigger Meta Pixel Search event
   useEffect(() => {
-    if (debouncedSearch !== initialKeyword) {
+    const currentParam = searchParams.get('keyword') || '';
+    if (debouncedSearch !== currentParam) {
       updateFilters({ keyword: debouncedSearch || undefined, page: 1 });
       if (debouncedSearch && debouncedSearch.trim().length > 1) {
         trackSearch(debouncedSearch.trim());
       }
     }
   }, [debouncedSearch]);
+
+  // Keep search input in sync if URL changes externally (e.g. navigation, browser back/forward, reset)
+  useEffect(() => {
+    const urlKeyword = searchParams.get('keyword') || '';
+    if (urlKeyword !== searchInput) {
+      setSearchInput(urlKeyword);
+    }
+  }, [searchParams]);
 
   // Keep price inputs in sync with URL
   useEffect(() => {
@@ -350,12 +360,28 @@ export function ShopClient() {
 
         {/* Search, Sort & Mobile Filters Button */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <Input
-            placeholder="Search products..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full sm:w-48 md:w-56 h-9 text-[10px]"
-          />
+          <div className="relative w-full sm:w-48 md:w-56">
+            <Input
+              placeholder="Search products..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full h-9 pl-8 pr-7 text-[10px]"
+            />
+            <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {searchInput && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchInput('');
+                  updateFilters({ keyword: undefined, page: 1 });
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-black p-0.5"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
           <select
             value={sort}
@@ -435,6 +461,22 @@ export function ShopClient() {
                 Active Selections:
               </div>
               <div className="flex flex-wrap gap-1.5">
+                {debouncedSearch && (
+                  <span className="inline-flex items-center gap-1 bg-black text-white px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                    "{debouncedSearch}"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchInput('');
+                        updateFilters({ keyword: undefined, page: 1 });
+                      }}
+                      className="hover:text-red-400"
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </span>
+                )}
+
                 {category && (
                   <span className="inline-flex items-center gap-1 bg-black text-white px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
                     {category}
