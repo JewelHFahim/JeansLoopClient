@@ -5,22 +5,22 @@ import { settingsApi } from '@/lib/api';
 import type { SiteSettings } from '@/lib/api-types';
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  title: 'Fire Cutter',
-  tagline: 'Export Mens clothing',
+  title: 'JeansLoop',
+  tagline: 'export clothing zone',
   logo: '',
-  email: 'thefirecutter@gmail.com',
-  phone: '+8801911209322',
-  address: 'Border Bazar, South Monipur, Mirpur, Dhaka',
+  email: 'jeansloop21@gmail.com',
+  phone: '+8801733572774',
+  address: 'Farmgate, Dhaka-1215',
   locationMapUrl: '',
-  businessHours: '10:00 AM - 10:00 PM',
-  announcement: '',
-  announcementEnabled: false,
+  businessHours: '10:00 AM - 10:00 PM (Daily)',
+  announcement: '🔥 Special Offer: Use code FIRST10 for 10% off your first order!',
+  announcementEnabled: true,
   announcementLink: '',
   socialLinks: {
-    facebook: 'https://www.facebook.com/firecutter',
+    facebook: 'https://www.facebook.com/jeansloop',
     instagram: '',
     youtube: '',
-    whatsapp: '+8801911209322',
+    whatsapp: '+8801733572774',
     tiktok: '',
   },
 };
