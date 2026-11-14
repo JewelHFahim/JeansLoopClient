@@ -23,8 +23,21 @@ import {
   Search,
 } from 'lucide-react';
 
+import { Product, Category } from '@/lib/api-types';
+
 type GridOption = 2 | 3 | 4;
 const LIMIT_OPTIONS = [12, 24, 36] as const;
+
+interface ShopClientProps {
+  initialProducts?: Product[];
+  initialPagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  initialCategories?: Category[];
+}
 
 // Common standard apparel & waist sizes
 const WAIST_SIZES = ['30', '32', '34', '36', '38', '40', '42', '44'];
@@ -37,7 +50,11 @@ const PRICE_PRESETS = [
   { label: 'Above ৳4,000', min: 4000, max: undefined },
 ];
 
-export function ShopClient() {
+export function ShopClient({
+  initialProducts = [],
+  initialPagination,
+  initialCategories = [],
+}: ShopClientProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -252,7 +269,7 @@ export function ShopClient() {
     router.push('/shop');
   };
 
-  // Queries
+  // Queries with SSR initialData for instant First Contentful Paint
   const { data: productsData, isLoading } = useQuery({
     queryKey: ['products', category, discount, sort, minPrice, maxPrice, sizeParam, stockStatus, page, limit, debouncedSearch],
     queryFn: async () => {
@@ -270,6 +287,14 @@ export function ShopClient() {
       });
       return res.data;
     },
+    initialData:
+      initialProducts.length > 0 && page === 1 && !debouncedSearch && !sizeParam && !minPrice && !maxPrice
+        ? {
+            success: true,
+            data: initialProducts,
+            pagination: initialPagination || { page: 1, limit, total: initialProducts.length, pages: 1 },
+          }
+        : undefined,
   });
 
   const { data: categoriesRes } = useQuery({
@@ -278,6 +303,7 @@ export function ShopClient() {
       const res = await categoriesApi.getAll();
       return res.data.data;
     },
+    initialData: initialCategories.length > 0 ? initialCategories : undefined,
   });
 
   // Query distinct sizes from backend for the currently selected category (or all)
